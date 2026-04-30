@@ -81,29 +81,33 @@
 
 <script>
   document.querySelectorAll<HTMLDivElement>('[data-widget="hierarchy"]').forEach((root) => {
-    const levelData: Record<string, { title: string; color: string; bg: string; body: string }> = {
+    const levelData: Record<string, { title: string; color: string; bg: string; deepColor: string; body: string }> = {
       org: {
         title: "1. Organization — the filing cabinet",
         color: "#185FA5",
         bg: "#E6F1FB",
+        deepColor: "#042C53",
         body: "The absolute top level. Represents your entire company (e.g., yourcompany.com). Everything your company ever builds in GCP lives inside this single, massive filing cabinet. If an employee leaves, they don't take their cloud resources with them — it all belongs to the Organization."
       },
       folder: {
         title: "2. Folders — the drawers",
         color: "#0F6E56",
         bg: "#E1F5EE",
+        deepColor: "#04342C",
         body: "Inside the filing cabinet, you create large drawers called Folders. Usually used to represent different departments or environments. You can even nest folders inside folders — e.g., inside 'Engineering', you might have 'Production' and 'Testing'."
       },
       project: {
         title: "3. Projects — the manila folders",
         color: "#854F0B",
         bg: "#FAEEDA",
+        deepColor: "#412402",
         body: "The most important concept in GCP. You cannot build anything (server, database, network) without first creating a Project. Projects act as a strict boundary for three things: <strong>Billing</strong> (who pays?), <strong>Permissions</strong> (who can open it?), and <strong>Isolation</strong> (deleting one project has zero impact on others)."
       },
       resource: {
         title: "4. Resources — the documents",
         color: "#3C3489",
         bg: "#EEEDFE",
+        deepColor: "#26215C",
         body: "The actual things you build — Compute Engine VMs, Cloud Storage buckets, AI models. They are the pieces of paper neatly filed inside the Project."
       }
     };
@@ -119,6 +123,7 @@
           <p>${data.body}</p>
         `;
         panel.style.background = data.bg;
+        panel.style.setProperty('--detail-text', data.deepColor);
       });
     });
 
@@ -182,7 +187,7 @@
     font-size: 14px;
     line-height: 1.6;
     margin: 0;
-    color: #1f1e1d;
+    color: var(--detail-text, var(--color-text-primary));
   }
   .hier-quiz {
     background: var(--color-bg-card);

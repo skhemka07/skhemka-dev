@@ -83,23 +83,26 @@
 
 <script>
   document.querySelectorAll<HTMLDivElement>('[data-widget="iam"]').forEach((root) => {
-    const pillarData: Record<string, { title: string; color: string; bg: string; body: string }> = {
+    const pillarData: Record<string, { title: string; color: string; bg: string; deepColor: string; body: string }> = {
       who: {
         title: "1. Who — identities",
         color: "#185FA5",
         bg: "#E6F1FB",
+        deepColor: "#042C53",
         body: "Three flavors of identity. <strong>Google Accounts</strong> are individual humans (alice@company.com). <strong>Google Groups</strong> are collections of humans — always prefer groups so you can add/remove people without touching IAM bindings. <strong>Service Accounts</strong> are robots — when an app talks to a database, it uses a service account, never a human's credentials."
       },
       what: {
         title: "2. What — roles",
         color: "#0F6E56",
         bg: "#E1F5EE",
+        deepColor: "#04342C",
         body: "You assign roles, not individual permissions. <strong>Basic roles</strong> (Owner, Editor, Viewer) are too broad — never use them in production. <strong>Predefined roles</strong> are surgical (roles/storage.objectViewer only reads storage objects). <strong>Custom roles</strong> are for the rare case Google's catalog isn't specific enough."
       },
       where: {
         title: "3. Where — scope",
         color: "#854F0B",
         bg: "#FAEEDA",
+        deepColor: "#412402",
         body: "Bindings attach at a specific level of the hierarchy from Lesson 1.1 — Organization, Folder, Project, or individual Resource. A binding at the Project level grants the role across every resource in that project. A binding on a single bucket only works on that bucket. Lower scope = tighter blast radius."
       }
     };
@@ -114,6 +117,7 @@
           <p>${data.body}</p>
         `;
         panel.style.background = data.bg;
+        panel.style.setProperty('--detail-text', data.deepColor);
       });
     });
 
@@ -177,7 +181,7 @@
   }
   .iam-prompt { font-size: 14px; color: var(--color-text-secondary); margin: 0; text-align: center; }
   .iam-detail-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-  .iam-detail-panel p { font-size: 14px; line-height: 1.6; margin: 0; color: #1f1e1d; }
+  .iam-detail-panel p { font-size: 14px; line-height: 1.6; margin: 0; color: var(--detail-text, var(--color-text-primary)); }
   .iam-quiz {
     background: var(--color-bg-card);
     border: 0.5px solid var(--color-border);
