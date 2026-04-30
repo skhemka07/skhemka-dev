@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import LessonLayout from '../../../layouts/LessonLayout.astro';
+import { gcpInfraLessons, getLessonIndex } from '../../../lessons';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('lessons');
+  return lessons
+    .filter(l => l.data.curriculum === 'infra' && l.data.track === 'gcp')
+    .map(lesson => ({
+      params: { slug: lesson.slug },
+      props: { lesson },
+    }));
+}
+
+const { lesson } = Astro.props;
+const { Content } = await lesson.render();
+
+const idx = getLessonIndex(lesson.slug);
+const meta = gcpInfraLessons[idx];
+const prevLesson = idx > 0 ? {
+  slug: gcpInfraLessons[idx - 1].slug,
+  title: gcpInfraLessons[idx - 1].title,
+  lesson: gcpInfraLessons[idx - 1].lesson,
+} : undefined;
+
+// Find next *published* lesson
+const nextPublishedIdx = gcpInfraLessons.findIndex((l, i) => i > idx && l.status === 'published');
+const nextLesson = nextPublishedIdx !== -1 ? {
+  slug: gcpInfraLessons[nextPublishedIdx].slug,
+  title: gcpInfraLessons[nextPublishedIdx].title,
+  lesson: gcpInfraLessons[nextPublishedIdx].lesson,
+} : undefined;
+---
+
+<LessonLayout
+  title={meta.title}
+  lesson={meta.lesson}
+  phase={meta.phase}
+  description={meta.description}
+  analogy={meta.analogy}
+  prevLesson={prevLesson}
+  nextLesson={nextLesson}
+  totalLessons={gcpInfraLessons.length}
+  currentNumber={idx + 1}
+>
+  <Content />
+</LessonLayout>

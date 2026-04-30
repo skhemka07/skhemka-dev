@@ -1,0 +1,48 @@
+---
+title: "The GCP resource hierarchy"
+phase: 1
+lesson: "1.1"
+curriculum: "infra"
+track: "gcp"
+description: "Organizations, folders, and projects — how GCP forces you to organize work before you build it."
+analogy: "The filing cabinet"
+publishedAt: 2026-04-29
+---
+
+import ResourceHierarchy from '../../components/ResourceHierarchy.astro';
+
+Imagine you're hired as the Chief Architect for a massive, messy corporation. Right now, everyone is just throwing their important documents into a giant pile in the middle of the room. It's chaos. Your job is to organize it securely.
+
+Google Cloud solves this with a strict **resource hierarchy**. Click each level below to explore — then take the architect's challenge at the bottom.
+
+<ResourceHierarchy />
+
+## The four levels, in plain English
+
+**The Organization Node** is the absolute top. It represents your entire company (e.g., `yourcompany.com`). Everything your company ever builds in GCP lives inside this single, massive filing cabinet. If an employee leaves, they don't take their cloud resources with them — it all belongs to the Organization.
+
+**Folders** are the drawers inside the cabinet. They usually represent departments or environments — HR, Engineering, Finance. You can nest folders inside folders: inside Engineering, you might have Production and Testing.
+
+**Projects** are the manila folders, and they're the most important concept in GCP. You cannot build anything — not a server, not a database, not a network — without first creating a Project to put it in. Projects act as a strict boundary for three things:
+
+1. **Billing** — who pays for the stuff inside this manila folder?
+2. **Permissions** — who is allowed to open it?
+3. **Isolation** — if a developer accidentally deletes everything in the "Testing App" project, it has zero impact on the "Production App" project.
+
+**Resources** are the documents — the actual things you build. Compute Engine VMs, Cloud Storage buckets, AI models. They're the pieces of paper neatly filed inside the Project.
+
+## The architect's "why" — inheritance
+
+Why do we bother with this strict structure? Because of **policy inheritance**.
+
+Policies flow downward. If you tell the security guard (IAM) at the top of the "Finance" folder that "Bob is NOT allowed to look at anything in here," that rule automatically flows down to every Project and every Resource inside that folder. You don't have to go block Bob on 50 individual databases. You block him once at the folder level, and the architecture does the rest.
+
+<div class="architect-note">
+  <div class="architect-note-label">Architect's note</div>
+
+  The hierarchy is **non-negotiable**. Unlike AWS (where accounts are loosely coupled) or Azure (where subscriptions can float), GCP enforces this exact structure. Every resource you ever provision must live inside a Project, every Project should ideally live inside a Folder, and the whole thing is bounded by your Org node tied to your domain.
+
+  In real engagements, you'll set things like `iam.allowedPolicyMemberDomains` (org policy) at the Organization node, environment tags at the Folder level, and only project-specific bindings at the Project level. Anything you set higher applies to everything below — which means messy hierarchies create messy permission audits.
+</div>
+
+When you're ready, the next lesson covers the security guard itself — IAM.

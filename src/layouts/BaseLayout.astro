@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Architect-grade GCP learning by Sunil Khemka' } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="container nav-inner">
+        <a href={baseUrl || '/'} class="nav-brand">skhemka<span class="nav-brand-accent">.learn</span></a>
+        <div class="nav-links">
+          <a href={`${baseUrl}/gcp/infra/`}>GCP Infra</a>
+          <a href="https://github.com/skhemka07" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>Built by Sunil Khemka — Senior AI Architect, IEEE Senior Member</p>
+        <p class="footer-meta">Lessons distill real production engagements with Fortune 500 clients</p>
+      </div>
+    </footer>
+
+    <style>
+      .site-nav {
+        border-bottom: 0.5px solid var(--color-border);
+        padding: 14px 0;
+        background: var(--color-bg);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(8px);
+      }
+      .nav-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-brand {
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--color-text-primary);
+        text-decoration: none;
+      }
+      .nav-brand-accent {
+        color: var(--color-accent);
+      }
+      .nav-links {
+        display: flex;
+        gap: 1.25rem;
+        font-size: 14px;
+      }
+      .nav-links a {
+        color: var(--color-text-secondary);
+      }
+      .nav-links a:hover {
+        color: var(--color-text-primary);
+        text-decoration: none;
+      }
+      main {
+        min-height: calc(100vh - 200px);
+        padding: 2rem 0 4rem;
+      }
+      .site-footer {
+        border-top: 0.5px solid var(--color-border);
+        padding: 2rem 0;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+        text-align: center;
+      }
+      .footer-meta {
+        color: var(--color-text-tertiary);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+    </style>
+  </body>
+</html>

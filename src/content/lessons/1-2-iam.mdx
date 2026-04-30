@@ -1,0 +1,48 @@
+---
+title: "IAM — identity & access management"
+phase: 1
+lesson: "1.2"
+curriculum: "infra"
+track: "gcp"
+description: "The bouncer at the door — who, what, and where for every access decision in GCP."
+analogy: "The bouncer and the VIP list"
+publishedAt: 2026-04-29
+---
+
+import IAMWidget from '../../components/IAMWidget.astro';
+
+Now that we have our filing cabinets and manila folders set up, we have a major security problem: anyone who walks into the building can open any drawer. We need to hire a security team.
+
+In Google Cloud, the security team is called **IAM** — Identity and Access Management.
+
+Imagine a bouncer at a nightclub holding a VIP list. The bouncer only cares about answering three questions: **who** is trying to get in, **what** are they allowed to do inside, and **where** exactly are they allowed to do it?
+
+<IAMWidget />
+
+## The three pillars
+
+**The "who" — identities.** Three flavors. Google Accounts are individual humans. Google Groups are collections of humans (always prefer groups — when Alice leaves the company, you remove her from one group instead of tracking down every server she had access to). Service Accounts are robots — when an app talks to a database, it uses a service account, never a human's credentials.
+
+**The "what" — roles.** You assign roles, not individual permissions. **Basic roles** (Owner, Editor, Viewer) are too broad — never use them in production. An Editor can edit literally everything in the project. **Predefined roles** are surgical: `roles/storage.objectViewer` only reads storage objects, nothing else. **Custom roles** exist for the rare case Google's catalog isn't specific enough.
+
+**The "where" — scope.** Bindings attach at a specific level of the hierarchy from Lesson 1.1. A binding at the Project level grants the role across every resource in that project. A binding on a single bucket only works on that bucket. Lower scope means tighter blast radius.
+
+## The golden rule — least privilege
+
+Give an identity the absolute minimum amount of access they need to do their job, and not a single permission more. If a developer only needs to *read* a database, you do not give them permission to *write* to it or *delete* from it.
+
+This sounds obvious. It is also the single most violated principle in cloud security.
+
+<div class="architect-note">
+  <div class="architect-note-label">Architect's note — avoid service account keys</div>
+
+  Avoid downloaded **service account JSON keys** wherever possible. On Compute Engine, GKE, and Cloud Run, attach the service account to the workload directly — credentials are issued via the metadata server and rotated automatically.
+
+  Downloaded JSON keys are the #1 source of GCP credential leaks on GitHub. A whole category of breach you sidestep by using workload identity instead.
+</div>
+
+The textbook least-privilege answer for a backend app uploading photos: a **service account** attached to the VM, with `roles/storage.objectCreator` (write-only — can't read existing photos back, can't list, can't delete), scoped to the **single bucket**. If the app gets compromised, the blast radius is exactly one bucket and the attacker can only add new objects.
+
+That's the answer auditors want to see at Wells Fargo, PayPal, Amex — not "Editor on the whole project, trust us."
+
+Next up: organization policies — the org-wide guardrails that prevent even an Owner from doing dumb things.

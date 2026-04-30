@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const baseUrl = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="skhemka.learn — architect-grade engineering tutorials">
+  <div class="container hero">
+    <h1>Architect-grade learning, one lesson at a time.</h1>
+    <p class="hero-tagline">Hard-won patterns from Fortune 500 engagements — distilled into interactive lessons you can finish on a coffee break.</p>
+  </div>
+
+  <div class="container curricula">
+    <h2>Curricula</h2>
+
+    <a href={`${baseUrl}/gcp/infra/`} class="curriculum-card">
+      <div class="curriculum-header">
+        <span class="curriculum-tag">GCP</span>
+        <h3>General infrastructure</h3>
+      </div>
+      <p>From the resource hierarchy to Terraform pipelines — 19 lessons covering the foundational layer of Google Cloud, the way an architect actually thinks about it.</p>
+      <span class="curriculum-cta">Start the curriculum →</span>
+    </a>
+
+    <div class="curriculum-card upcoming">
+      <div class="curriculum-header">
+        <span class="curriculum-tag">GCP</span>
+        <h3>AI & ML platform</h3>
+      </div>
+      <p>Vertex AI, agentic systems, LLMOps. <em>Coming soon.</em></p>
+    </div>
+  </div>
+
+  <style>
+    .hero {
+      padding: 3rem 1.5rem 2rem;
+      text-align: center;
+      max-width: 700px;
+    }
+    .hero h1 {
+      font-size: 36px;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .hero-tagline {
+      font-size: 17px;
+      color: var(--color-text-secondary);
+    }
+    .curricula {
+      max-width: 760px;
+    }
+    .curriculum-card {
+      display: block;
+      padding: 1.5rem 1.75rem;
+      margin: 1rem 0;
+      background: var(--color-bg-card);
+      border: 0.5px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      color: var(--color-text-primary);
+      text-decoration: none;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .curriculum-card:hover:not(.upcoming) {
+      border-color: var(--color-accent);
+      text-decoration: none;
+    }
+    .curriculum-card.upcoming {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .curriculum-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .curriculum-tag {
+      background: var(--color-info-bg);
+      color: var(--color-info);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .curriculum-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .curriculum-card p {
+      color: var(--color-text-secondary);
+      font-size: 15px;
+      margin: 0.5rem 0;
+    }
+    .curriculum-cta {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--color-accent);
+      font-weight: 500;
+    }
+  </style>
+</BaseLayout>

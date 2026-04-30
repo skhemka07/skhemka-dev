@@ -1,0 +1,219 @@
+---
+// IAM interactive — drop into any lesson with <IAMWidget />
+---
+
+<div class="iam-widget" data-widget="iam">
+  <svg width="100%" viewBox="0 0 680 280" role="img">
+    <title>The three IAM questions</title>
+    <desc>Three pillars representing the questions IAM asks: Who, What, and Where, all governed by the principle of least privilege.</desc>
+
+    <g class="iam-pillar" data-pillar="who" style="cursor:pointer">
+      <rect x="40" y="40" width="190" height="110" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="135" y="72" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#0C447C">1. Who?</text>
+      <text x="135" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">Identities</text>
+      <text x="135" y="120" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">Users, groups, robots</text>
+    </g>
+
+    <g class="iam-pillar" data-pillar="what" style="cursor:pointer">
+      <rect x="245" y="40" width="190" height="110" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="340" y="72" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#085041">2. What?</text>
+      <text x="340" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">Roles</text>
+      <text x="340" y="120" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">Bundles of permissions</text>
+    </g>
+
+    <g class="iam-pillar" data-pillar="where" style="cursor:pointer">
+      <rect x="450" y="40" width="190" height="110" rx="10" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="545" y="72" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#633806">3. Where?</text>
+      <text x="545" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#854F0B">Scope</text>
+      <text x="545" y="120" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#854F0B">Org, folder, project, resource</text>
+    </g>
+
+    <g>
+      <rect x="40" y="180" width="600" height="76" rx="10" fill="var(--color-bg-secondary)" stroke="var(--color-border)" stroke-width="0.5"/>
+      <text x="340" y="208" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="var(--color-text-primary)">The golden rule — least privilege</text>
+      <text x="340" y="230" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">Give the minimum access needed to do the job —</text>
+      <text x="340" y="246" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">not one permission more.</text>
+    </g>
+  </svg>
+
+  <div class="iam-detail-panel" data-panel>
+    <p class="iam-prompt">👆 Click a pillar to see the architect's notes</p>
+  </div>
+
+  <div class="iam-quiz">
+    <div class="iam-quiz-header">
+      <span class="iam-quiz-tag">Quick check</span>
+      <span class="iam-quiz-meta">Build the access policy</span>
+    </div>
+    <p class="iam-quiz-q">Your <strong>backend app</strong> on a Compute Engine VM needs to upload user photos to a storage bucket. Pick the identity, the role, and the scope.</p>
+
+    <div class="iam-quiz-row">
+      <div class="iam-quiz-label">Identity (the "who")</div>
+      <div class="iam-quiz-options" data-cat="identity">
+        <button data-val="user">Alice's account</button>
+        <button data-val="group">Engineers group</button>
+        <button data-val="sa">Service account</button>
+      </div>
+    </div>
+
+    <div class="iam-quiz-row">
+      <div class="iam-quiz-label">Role (the "what")</div>
+      <div class="iam-quiz-options" data-cat="role">
+        <button data-val="editor">Project editor</button>
+        <button data-val="admin">Storage admin</button>
+        <button data-val="creator">Object creator</button>
+        <button data-val="viewer">Object viewer</button>
+      </div>
+    </div>
+
+    <div class="iam-quiz-row">
+      <div class="iam-quiz-label">Scope (the "where")</div>
+      <div class="iam-quiz-options" data-cat="scope">
+        <button data-val="org">Whole organization</button>
+        <button data-val="project">Whole project</button>
+        <button data-val="bucket">Just the photo bucket</button>
+      </div>
+    </div>
+
+    <button class="iam-check-btn" data-check>Check my answer</button>
+
+    <div class="iam-quiz-feedback" data-feedback></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('[data-widget="iam"]').forEach((root) => {
+    const pillarData: Record<string, { title: string; color: string; bg: string; body: string }> = {
+      who: {
+        title: "1. Who — identities",
+        color: "#185FA5",
+        bg: "#E6F1FB",
+        body: "Three flavors of identity. <strong>Google Accounts</strong> are individual humans (alice@company.com). <strong>Google Groups</strong> are collections of humans — always prefer groups so you can add/remove people without touching IAM bindings. <strong>Service Accounts</strong> are robots — when an app talks to a database, it uses a service account, never a human's credentials."
+      },
+      what: {
+        title: "2. What — roles",
+        color: "#0F6E56",
+        bg: "#E1F5EE",
+        body: "You assign roles, not individual permissions. <strong>Basic roles</strong> (Owner, Editor, Viewer) are too broad — never use them in production. <strong>Predefined roles</strong> are surgical (roles/storage.objectViewer only reads storage objects). <strong>Custom roles</strong> are for the rare case Google's catalog isn't specific enough."
+      },
+      where: {
+        title: "3. Where — scope",
+        color: "#854F0B",
+        bg: "#FAEEDA",
+        body: "Bindings attach at a specific level of the hierarchy from Lesson 1.1 — Organization, Folder, Project, or individual Resource. A binding at the Project level grants the role across every resource in that project. A binding on a single bucket only works on that bucket. Lower scope = tighter blast radius."
+      }
+    };
+
+    const panel = root.querySelector<HTMLDivElement>('[data-panel]')!;
+    root.querySelectorAll<SVGGElement>('.iam-pillar').forEach((node) => {
+      node.addEventListener('click', () => {
+        const key = node.dataset.pillar!;
+        const data = pillarData[key];
+        panel.innerHTML = `
+          <div class="iam-detail-title" style="color: ${data.color}">${data.title}</div>
+          <p>${data.body}</p>
+        `;
+        panel.style.background = data.bg;
+      });
+    });
+
+    const choices: Record<string, string | null> = { identity: null, role: null, scope: null };
+    root.querySelectorAll<HTMLDivElement>('[data-cat]').forEach((row) => {
+      const category = row.dataset.cat!;
+      row.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          choices[category] = btn.dataset.val!;
+          row.querySelectorAll<HTMLButtonElement>('button').forEach(b => {
+            b.style.background = '';
+            b.style.borderColor = '';
+            b.style.color = '';
+          });
+          btn.style.background = 'var(--color-info-bg)';
+          btn.style.borderColor = 'var(--color-info)';
+          btn.style.color = 'var(--color-info)';
+        });
+      });
+    });
+
+    const fb = root.querySelector<HTMLDivElement>('[data-feedback]')!;
+    root.querySelector<HTMLButtonElement>('[data-check]')!.addEventListener('click', () => {
+      if (!choices.identity || !choices.role || !choices.scope) {
+        fb.style.display = 'block';
+        fb.className = 'iam-quiz-feedback warning';
+        fb.innerHTML = 'Pick one option from each row before checking.';
+        return;
+      }
+      const ideal = choices.identity === 'sa' && choices.role === 'creator' && choices.scope === 'bucket';
+      fb.style.display = 'block';
+      if (ideal) {
+        fb.className = 'iam-quiz-feedback success';
+        fb.innerHTML = '<strong>✓ Textbook least-privilege.</strong> A <code>service account</code> attached to the VM (no human credentials baked into code), with <code>roles/storage.objectCreator</code> (write-only — it can\'t even read existing photos back, let alone delete them or list the bucket), scoped to the single photo bucket. If the app gets compromised, the blast radius is exactly one bucket and the attacker can only add new objects.';
+        return;
+      }
+      const issues: string[] = [];
+      if (choices.identity === 'user') issues.push('<strong>Identity:</strong> never use a human\'s account for an app — when Alice leaves the company, the app dies. Use a <code>service account</code>.');
+      if (choices.identity === 'group') issues.push('<strong>Identity:</strong> groups are for humans. Apps need a <code>service account</code> — a robot ID badge with no password to leak.');
+      if (choices.role === 'editor') issues.push('<strong>Role:</strong> Project Editor is the classic over-privilege trap. It can edit <em>everything</em> in the project. If the app is breached, the attacker owns the whole project.');
+      if (choices.role === 'admin') issues.push('<strong>Role:</strong> Storage Admin can delete buckets and read every object. The app only needs to <em>upload</em>. <code>roles/storage.objectCreator</code> is write-only — much tighter.');
+      if (choices.role === 'viewer') issues.push('<strong>Role:</strong> Object Viewer only reads — the app needs to write uploads. <code>roles/storage.objectCreator</code> grants write without read.');
+      if (choices.scope === 'org') issues.push('<strong>Scope:</strong> Organization-level grants apply everywhere. Way too broad.');
+      if (choices.scope === 'project') issues.push('<strong>Scope:</strong> project-level works, but the app only touches one bucket. Bind on the bucket itself — if a new bucket appears tomorrow, this app shouldn\'t auto-inherit access.');
+      fb.className = 'iam-quiz-feedback warning';
+      fb.innerHTML = '<strong>Close, but tighten it up:</strong><ul>' + issues.map(i => `<li>${i}</li>`).join('') + '</ul>';
+    });
+  });
+</script>
+
+<style>
+  .iam-widget { margin: 2rem 0; }
+  .iam-pillar:hover rect { filter: brightness(0.97); }
+  .iam-detail-panel {
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 1.5rem;
+    min-height: 100px;
+    transition: background 0.2s;
+  }
+  .iam-prompt { font-size: 14px; color: var(--color-text-secondary); margin: 0; text-align: center; }
+  .iam-detail-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+  .iam-detail-panel p { font-size: 14px; line-height: 1.6; margin: 0; color: #1f1e1d; }
+  .iam-quiz {
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+  }
+  .iam-quiz-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .iam-quiz-tag {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+  }
+  .iam-quiz-meta { font-size: 13px; color: var(--color-text-secondary); }
+  .iam-quiz-q { font-size: 15px; margin: 0 0 16px; }
+  .iam-quiz-row { margin-bottom: 14px; }
+  .iam-quiz-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .iam-quiz-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+  }
+  .iam-quiz-options button { font-size: 13px; padding: 8px; }
+  .iam-check-btn { width: 100%; padding: 10px; font-size: 14px; font-weight: 500; margin-top: 4px; }
+  .iam-quiz-feedback {
+    display: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .iam-quiz-feedback.success { background: var(--color-success-bg); color: var(--color-success); }
+  .iam-quiz-feedback.warning { background: var(--color-warning-bg); color: var(--color-warning); }
+  .iam-quiz-feedback ul { margin: 8px 0 0; padding-left: 20px; }
+  .iam-quiz-feedback li { margin-bottom: 6px; }
+</style>
