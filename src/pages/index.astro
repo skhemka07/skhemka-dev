@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="skhemka.learn — architect-grade engineering tutorials">
@@ -12,7 +11,7 @@ const baseUrl = import.meta.env.BASE_URL;
   <div class="container curricula">
     <h2>Curricula</h2>
 
-    <a href={`${baseUrl}/gcp/infra/`} class="curriculum-card">
+    <a href="/gcp/infra/" class="curriculum-card">
       <div class="curriculum-header">
         <span class="curriculum-tag">GCP</span>
         <h3>General infrastructure</h3>

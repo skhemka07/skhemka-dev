@@ -14,7 +14,6 @@ interface Props {
 }
 
 const { title, lesson, phase, description, analogy, prevLesson, nextLesson, totalLessons, currentNumber } = Astro.props;
-const baseUrl = import.meta.env.BASE_URL;
 const progressPct = Math.round((currentNumber / totalLessons) * 100);
 ---
 
@@ -41,20 +40,20 @@ const progressPct = Math.round((currentNumber / totalLessons) * 100);
 
     <nav class="lesson-nav">
       {prevLesson ? (
-        <a href={`${baseUrl}/gcp/infra/${prevLesson.slug}/`} class="lesson-nav-link prev">
+        <a href={`/gcp/infra/${prevLesson.slug}/`} class="lesson-nav-link prev">
           <span class="nav-direction">← Previous</span>
           <span class="nav-title">Lesson {prevLesson.lesson} · {prevLesson.title}</span>
         </a>
       ) : <div></div>}
       {nextLesson ? (
-        <a href={`${baseUrl}/gcp/infra/${nextLesson.slug}/`} class="lesson-nav-link next">
+        <a href={`/gcp/infra/${nextLesson.slug}/`} class="lesson-nav-link next">
           <span class="nav-direction">Next →</span>
           <span class="nav-title">Lesson {nextLesson.lesson} · {nextLesson.title}</span>
         </a>
       ) : <div></div>}
     </nav>
 
-    <a href={`${baseUrl}/gcp/infra/`} class="back-to-toc">← Back to curriculum</a>
+    <a href="/gcp/infra/" class="back-to-toc">← Back to curriculum</a>
   </article>
 
   <style>

@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { title, description = 'Architect-grade GCP learning by Sunil Khemka' } = Astro.props;
-const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <!DOCTYPE html>
@@ -20,15 +19,15 @@ const baseUrl = import.meta.env.BASE_URL;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="article" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/svg+xml" href={`${baseUrl}/favicon.svg`} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
   <body>
     <nav class="site-nav">
       <div class="container nav-inner">
-        <a href={baseUrl || '/'} class="nav-brand">skhemka<span class="nav-brand-accent">.learn</span></a>
+        <a href="/" class="nav-brand">skhemka<span class="nav-brand-accent">.learn</span></a>
         <div class="nav-links">
-          <a href={`${baseUrl}/gcp/infra/`}>GCP Infra</a>
+          <a href="/gcp/infra/">GCP Infra</a>
           <a href="https://github.com/skhemka07" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
