@@ -1,5 +1,5 @@
 ---
-// Org Policies interactive — fixed dark slate panels for guaranteed readability
+// Org Policies interactive — bulletproof contrast, security-team scenario
 ---
 
 <div class="op-widget" data-op-widget>
@@ -15,7 +15,7 @@
     <g class="op-node" data-policy="building" style="cursor:pointer">
       <rect x="80" y="20" width="520" height="64" rx="10" fill="#FBEAF0" stroke="#993556" stroke-width="0.5"/>
       <text x="340" y="46" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#621D38">Organization</text>
-      <text x="340" y="66" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993556">The whole building — yourcompany.com — where org policies attach</text>
+      <text x="340" y="66" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993556">The whole city — yourcompany.com — where zoning laws attach</text>
     </g>
 
     <g class="op-policy" data-policy="public-buckets" style="cursor:pointer">
@@ -67,10 +67,16 @@
 
   <div class="op-quiz">
     <div class="op-quiz-header">
-      <span class="op-quiz-tag">Build your guardrails</span>
-      <span class="op-quiz-meta">Regulated FinTech scenario</span>
+      <span class="op-quiz-tag">Quick check</span>
+      <span class="op-quiz-meta">Your security team is terrified</span>
     </div>
-    <p class="op-quiz-q">You're the Chief Architect for a <strong>regulated EU FinTech</strong>. Auditors will visit in 60 days. Pick the org policies you'd set at the Organization level.</p>
+    <p class="op-quiz-q">Your security team won't sleep. They're worried about three things at once:</p>
+    <ul class="op-quiz-list">
+      <li>A developer accidentally making a Cloud Storage bucket <strong>public</strong> and leaking customer data</li>
+      <li>Customer data ending up <strong>outside the EU</strong> (GDPR violation)</li>
+      <li>An engineer granting access to a <strong>personal Gmail account</strong> for "convenience"</li>
+    </ul>
+    <p class="op-quiz-q-bottom">Pick the org policies that would technically prevent each of these — not just discourage them.</p>
 
     <div class="op-quiz-options" data-op-options>
       <button data-policy="public-buckets">🚫 Block public Cloud Storage buckets</button>
@@ -91,24 +97,24 @@
   document.querySelectorAll<HTMLDivElement>('[data-op-widget]').forEach((root) => {
     const policyData: Record<string, { title: string; accent: string; body: string }> = {
       building: {
-        title: "Organization — where the rules live",
+        title: "Organization — where the zoning laws live",
         accent: "#e88aab",
-        body: "Org policies attach at the Organization node and inherit downward to every folder, project, and resource. Unlike IAM (which says <em>who can do what</em>), org policies say <em>what nobody can do, ever</em> — even Owners. They're the technical equivalent of a fire code: not a permission grant, but a hard prohibition baked into the architecture itself."
+        body: "Org policies attach at the Organization node and inherit downward to every folder, project, and resource. Unlike IAM (which says <em>who can do what</em>), org policies say <em>what is allowed to exist at all</em> — regardless of who's asking. They're the technical equivalent of city zoning laws: not a permission grant to a specific person, but a hard constraint baked into the architecture itself."
       },
       "public-buckets": {
         title: "🚫 No public buckets — storage.publicAccessPrevention",
         accent: "#efad4e",
-        body: "When set to <code>enforced</code>, no Cloud Storage bucket in the entire org can be made public. Even an Owner with full IAM rights cannot toggle <code>allUsers</code> access on a bucket. This is the single most important policy for any company handling customer data — and the most common audit finding when missing. <strong>The pattern: deny dangerous things at the org level, then grant exceptions only at specific folders if genuinely needed.</strong>"
+        body: "When set to <code>enforced</code>, no Cloud Storage bucket in the entire org can be made public. Even an Owner with full IAM rights cannot toggle <code>allUsers</code> access. This is the single most important policy for any company handling customer data — and the most common audit finding when missing. <strong>The pattern: deny dangerous things at the org level, then carve out specific exceptions only at folders that genuinely need them.</strong>"
       },
       "region-lock": {
         title: "🌍 Region lock — gcp.resourceLocations",
         accent: "#5dcaa5",
-        body: "Restricts where resources can be created — e.g., EU-only for GDPR compliance, India-only for RBI data localization, US-only for FedRAMP workloads. Without this policy, a developer in your Bangalore office could accidentally spin up a Cloud SQL instance in us-central1 holding regulated EU customer data — and you've just become a GDPR violation. Set this once at the Org level and the entire company physically cannot create resources in the wrong region."
+        body: "Restricts where resources can be created — EU-only for GDPR, India-only for RBI data localization, US-only for FedRAMP. Without it, a developer in your Bangalore office can spin up Cloud SQL holding regulated EU customer data in <code>us-central1</code> by accident, and you've just become a GDPR violation. With the policy set, the API rejects the request before the resource exists."
       },
       "external-iam": {
         title: "🔒 Domain-only IAM — iam.allowedPolicyMemberDomains",
         accent: "#7eb6f0",
-        body: "Restricts IAM bindings to identities from your own organization's domain. Without it, an engineer can grant <code>Owner</code> on a project to <code>random-consultant@gmail.com</code>. With it, only <code>@yourcompany.com</code> identities can ever appear in IAM bindings anywhere in the org. For Fortune 500 clients, this is non-negotiable — the kind of thing that gets flagged in a SOC 2 audit if missing."
+        body: "Restricts IAM bindings to identities from your own organization's domain. Without it, an engineer can grant <code>Owner</code> on a project to <code>random-consultant@gmail.com</code>. With it, only <code>@yourcompany.com</code> identities can ever appear in IAM bindings anywhere. For Fortune 500 clients, this is non-negotiable — the kind of thing that gets immediately flagged in a SOC 2 audit if missing."
       }
     };
 
@@ -171,7 +177,7 @@
 
       if (selected.has('none') || selected.size === 0) {
         fb.className = 'op-quiz-feedback warning';
-        fb.innerHTML = '<strong>Auditor visits in 60 days. You will fail.</strong> "Trust our engineers" is not a control — it\'s a hope. The whole point of org policies is that engineers <em>cannot</em> violate them, even when they\'re tired, in a hurry, or genuinely don\'t know better. Pick at least the three core policies (public buckets, region lock, domain-only IAM) and try again.';
+        fb.innerHTML = '<strong>Your security team can\'t sleep — and they\'re right.</strong> "Trust our engineers" is not a control; it\'s a hope. The whole point of org policies is that engineers <em>cannot</em> violate them, even when they\'re tired, in a hurry, or genuinely don\'t know better. Pick the three policies that map to each fear and try again.';
         return;
       }
 
@@ -181,22 +187,22 @@
 
       if (missing.length === 0) {
         fb.className = 'op-quiz-feedback success';
-        let msg = '<strong>✓ Solid baseline.</strong> Public buckets blocked (data leak prevention), region locked to EU (GDPR data residency), domain-only IAM (no rogue gmail accounts in your bindings). This is the minimum table-stakes policy set for any regulated FinTech.';
+        let msg = '<strong>✓ Your security team can sleep tonight.</strong> Public buckets blocked → no accidental data leak. Region locked to EU → no GDPR violation. Domain-only IAM → no rogue Gmail accounts. Each fear maps to a constraint, and each constraint is now a hard wall, not a hopeful guideline.';
         if (bonus.length > 0) {
-          msg += ` <strong>Bonus credit</strong> for ${bonus.length === 2 ? 'both' : 'the'} additional ${bonus.length === 1 ? 'policy' : 'policies'} — `;
+          msg += ` <strong>Bonus credit</strong> for ${bonus.length === 2 ? 'both' : 'the'} additional ${bonus.length === 1 ? 'policy' : 'policies'}: `;
           if (selected.has('vm-external-ip')) msg += 'blocking external IPs on VMs eliminates a huge attack surface (forces all internet traffic through a NAT or load balancer where you can log it). ';
-          if (selected.has('sa-key-creation')) msg += 'disabling service account key creation forces workload identity instead — the #1 GCP credential leak source on GitHub goes away entirely. ';
+          if (selected.has('sa-key-creation')) msg += 'disabling service account key creation forces workload identity instead — the #1 source of GCP credential leaks on GitHub goes away entirely. ';
           msg += 'You\'re thinking like a real architect: build the controls into the platform, not the people.';
         } else {
-          msg += ' Two bonus policies you could add: blocking VM external IPs (forces NAT/load-balancer-only egress) and disabling service account key creation (kills the #1 source of credential leaks).';
+          msg += ' Two bonus policies you could add: blocking VM external IPs (forces NAT/load-balancer-only egress) and disabling service account key creation (kills the #1 source of credential leaks on GitHub).';
         }
         fb.innerHTML = msg;
       } else {
         fb.className = 'op-quiz-feedback warning';
-        let hint = '<strong>Close — but missing critical policies for a regulated FinTech.</strong><ul>';
-        if (missing.includes('public-buckets')) hint += '<li>Without <strong>blocking public buckets</strong>: one developer toggling <code>allUsers</code> on a bucket holding KYC data is a regulatory disaster. This is non-negotiable.</li>';
-        if (missing.includes('region-lock')) hint += '<li>Without <strong>region lock</strong>: EU customer data could be stored in us-central1 by accident — instant GDPR violation. Auditors will find this in the first 10 minutes.</li>';
-        if (missing.includes('external-iam')) hint += '<li>Without <strong>domain-only IAM</strong>: any engineer can grant access to a personal Gmail account. SOC 2 will flag this immediately.</li>';
+        let hint = '<strong>Close — but at least one fear isn\'t covered yet.</strong><ul>';
+        if (missing.includes('public-buckets')) hint += '<li>Without <strong>blocking public buckets</strong>: the first fear (data leak via accidental public bucket) is still possible. One developer toggling <code>allUsers</code> and you\'re in the headlines.</li>';
+        if (missing.includes('region-lock')) hint += '<li>Without <strong>region lock</strong>: the second fear (data leaving the EU) is still possible. One <code>us-central1</code> typo and you have a GDPR breach to report.</li>';
+        if (missing.includes('external-iam')) hint += '<li>Without <strong>domain-only IAM</strong>: the third fear (Gmail account in IAM bindings) is still possible. SOC 2 will flag this in the first 10 minutes of audit.</li>';
         hint += '</ul>';
         fb.innerHTML = hint;
       }
@@ -262,7 +268,15 @@
     border-radius: var(--radius-md);
   }
   .op-quiz-meta { font-size: 13px; color: var(--color-text-secondary); }
-  .op-quiz-q { font-size: 15px; margin: 0 0 16px; }
+  .op-quiz-q { font-size: 15px; margin: 0 0 12px; }
+  .op-quiz-list {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin: 0 0 16px;
+    padding-left: 20px;
+    line-height: 1.7;
+  }
+  .op-quiz-q-bottom { font-size: 14px; margin: 0 0 14px; }
   .op-quiz-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
