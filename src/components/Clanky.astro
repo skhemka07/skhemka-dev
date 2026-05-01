@@ -1,0 +1,52 @@
+---
+// Clanky cameo — a confused robot sidekick asking the question the reader was about to ask.
+// Usage: <Clanky question="Wait, why...?" />
+interface Props {
+  question: string;
+}
+const { question } = Astro.props;
+---
+
+<div class="clanky-cameo">
+  <div class="clanky-avatar">🤖</div>
+  <div class="clanky-bubble">
+    <div class="clanky-name">Clanky asks</div>
+    <div class="clanky-question">{question}</div>
+  </div>
+</div>
+
+<style>
+  .clanky-cameo {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 1.75rem 0;
+    padding: 1rem 1.25rem;
+    background: #2c2a26;
+    border-left: 3px solid #efad4e;
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  }
+  .clanky-avatar {
+    font-size: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .clanky-bubble {
+    flex: 1;
+  }
+  .clanky-name {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #efad4e;
+    margin-bottom: 4px;
+  }
+  .clanky-question {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #f0eee6;
+    font-style: italic;
+  }
+</style>

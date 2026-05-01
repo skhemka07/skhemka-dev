@@ -1,0 +1,208 @@
+---
+// VPC architecture interactive — global VPC with regional subnets
+---
+
+<div class="vpc-widget" data-vpc-widget>
+  <svg width="100%" viewBox="0 0 700 460" role="img">
+    <title>Global VPC with regional subnets</title>
+    <desc>A single VPC spans the globe; subnets are regional partitions inside it.</desc>
+
+    <rect x="20" y="20" width="660" height="320" rx="12" fill="none" stroke="#3C3489" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="40" y="42" font-weight="500" font-size="13" fill="#3C3489">VPC: production-network (global)</text>
+    <text x="40" y="58" font-size="11" fill="#5d51b3">10.0.0.0/8 — your private address space</text>
+
+    <g class="vpc-node" data-key="subnet-us" style="cursor:pointer">
+      <rect x="50" y="80" width="180" height="220" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="140" y="105" text-anchor="middle" font-weight="500" font-size="13" fill="#0C447C">us-central1</text>
+      <text x="140" y="123" text-anchor="middle" font-size="11" fill="#185FA5">10.0.0.0/20</text>
+      <rect x="70" y="145" width="140" height="30" rx="5" fill="#fff" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="140" y="160" text-anchor="middle" font-size="11" fill="#0C447C">VM: api-server-1</text>
+      <rect x="70" y="185" width="140" height="30" rx="5" fill="#fff" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="140" y="200" text-anchor="middle" font-size="11" fill="#0C447C">VM: api-server-2</text>
+      <rect x="70" y="225" width="140" height="30" rx="5" fill="#fff" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="140" y="240" text-anchor="middle" font-size="11" fill="#0C447C">Cloud SQL: orders-db</text>
+    </g>
+
+    <g class="vpc-node" data-key="subnet-eu" style="cursor:pointer">
+      <rect x="260" y="80" width="180" height="220" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="350" y="105" text-anchor="middle" font-weight="500" font-size="13" fill="#085041">europe-west1</text>
+      <text x="350" y="123" text-anchor="middle" font-size="11" fill="#0F6E56">10.0.16.0/20</text>
+      <rect x="280" y="145" width="140" height="30" rx="5" fill="#fff" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="350" y="160" text-anchor="middle" font-size="11" fill="#085041">VM: gdpr-frontend</text>
+      <rect x="280" y="185" width="140" height="30" rx="5" fill="#fff" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="350" y="200" text-anchor="middle" font-size="11" fill="#085041">VM: eu-customer-api</text>
+    </g>
+
+    <g class="vpc-node" data-key="subnet-asia" style="cursor:pointer">
+      <rect x="470" y="80" width="180" height="220" rx="10" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="560" y="105" text-anchor="middle" font-weight="500" font-size="13" fill="#633806">asia-south1</text>
+      <text x="560" y="123" text-anchor="middle" font-size="11" fill="#854F0B">10.0.32.0/20</text>
+      <rect x="490" y="145" width="140" height="30" rx="5" fill="#fff" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="560" y="160" text-anchor="middle" font-size="11" fill="#633806">VM: india-app</text>
+      <rect x="490" y="185" width="140" height="30" rx="5" fill="#fff" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="560" y="200" text-anchor="middle" font-size="11" fill="#633806">VM: india-worker</text>
+    </g>
+
+    <line x1="230" y1="190" x2="260" y2="190" stroke="#3C3489" stroke-width="1.5"/>
+    <line x1="440" y1="190" x2="470" y2="190" stroke="#3C3489" stroke-width="1.5"/>
+    <text x="245" y="184" text-anchor="middle" font-size="9" fill="#3C3489">internal</text>
+    <text x="455" y="184" text-anchor="middle" font-size="9" fill="#3C3489">internal</text>
+
+    <g>
+      <rect x="20" y="360" width="660" height="80" rx="10" fill="#3c2820" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="350" y="386" text-anchor="middle" font-weight="500" font-size="14" fill="#efad4e">The architect's "why"</text>
+      <text x="350" y="408" text-anchor="middle" font-size="12" fill="#d3d1c7">One VPC. Three continents. Private internal IPs talking across the planet —</text>
+      <text x="350" y="424" text-anchor="middle" font-size="12" fill="#d3d1c7">no public internet, no VPC peering, no extra config. This is what global means.</text>
+    </g>
+  </svg>
+
+  <div class="vpc-detail-panel" data-vpc-panel>
+    <div class="vpc-prompt">
+      <span class="vpc-prompt-icon">→</span>
+      <span>Click any subnet above to read what's happening</span>
+    </div>
+  </div>
+
+  <div class="vpc-quiz">
+    <div class="vpc-quiz-header">
+      <span class="vpc-quiz-tag">Quick check</span>
+      <span class="vpc-quiz-meta">Architect scenario</span>
+    </div>
+    <p class="vpc-quiz-q">A developer in your <strong>Bangalore office</strong> creates a new VM. They want it to talk to a <strong>Cloud SQL database in us-central1</strong>. Both live inside your single global production VPC.</p>
+    <p class="vpc-quiz-q-bottom">What network configuration do they need to set up?</p>
+    <div class="vpc-quiz-options" data-vpc-options>
+      <button data-answer="peering">Set up VPC peering between US and India regions</button>
+      <button data-answer="vpn">Configure a VPN tunnel between regions</button>
+      <button data-answer="public">Give the database a public IP and connect over the internet</button>
+      <button data-answer="nothing">Nothing — they can already reach it via private IP</button>
+    </div>
+    <div class="vpc-quiz-feedback" data-vpc-feedback></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('[data-vpc-widget]').forEach((root) => {
+    const data: Record<string, { title: string; accent: string; body: string }> = {
+      "subnet-us": {
+        title: "us-central1 subnet — 10.0.0.0/20",
+        accent: "#7eb6f0",
+        body: "A subnet is a regional slice of the VPC. This one lives entirely in <code>us-central1</code> (Iowa). The 10.0.0.0/20 means this subnet owns the IP range 10.0.0.0 to 10.0.15.255 — about 4,000 addresses. Every VM and Cloud SQL instance you place here gets a private IP from this range. <strong>Subnets are regional, not zonal</strong> — meaning a single subnet automatically spans all zones inside its region (us-central1-a, us-central1-b, us-central1-c, etc.)."
+      },
+      "subnet-eu": {
+        title: "europe-west1 subnet — 10.0.16.0/20",
+        accent: "#5dcaa5",
+        body: "Different region, different subnet, different IP range — but <em>same VPC</em>. The GDPR-relevant workloads live here so customer data physically stays in the EU. Combined with the org policy from Lesson 1.3 (<code>gcp.resourceLocations</code>), this means you can guarantee data residency by architecture, not by hoping engineers remember the rules."
+      },
+      "subnet-asia": {
+        title: "asia-south1 subnet — 10.0.32.0/20",
+        accent: "#efad4e",
+        body: "Mumbai. Latency-sensitive workloads for Indian users live close to them. Same VPC as the other two — these VMs can reach the Cloud SQL instance in us-central1 via private IP, no public internet involved. <strong>This is the killer feature of GCP's global VPC model:</strong> you don't have to set up VPC peering or VPN tunnels between regions. They're already on the same network."
+      }
+    };
+
+    const panel = root.querySelector<HTMLDivElement>('[data-vpc-panel]')!;
+    root.querySelectorAll<SVGGElement>('.vpc-node').forEach((node) => {
+      node.addEventListener('click', () => {
+        const key = node.dataset.key!;
+        const d = data[key];
+        panel.innerHTML = `
+          <div class="vpc-detail-title" style="color: ${d.accent};">${d.title}</div>
+          <p class="vpc-detail-body">${d.body}</p>
+        `;
+        panel.style.borderColor = d.accent;
+      });
+    });
+
+    const optionsEl = root.querySelector<HTMLDivElement>('[data-vpc-options]')!;
+    const fb = root.querySelector<HTMLDivElement>('[data-vpc-feedback]')!;
+    optionsEl.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const ans = btn.dataset.answer!;
+        optionsEl.querySelectorAll<HTMLButtonElement>('button').forEach(b => {
+          b.disabled = true;
+          b.style.opacity = '0.5';
+          if (b === btn) {
+            b.style.opacity = '1';
+            b.style.borderColor = ans === 'nothing' ? '#5dcaa5' : '#e08585';
+          }
+        });
+        fb.style.display = 'block';
+        if (ans === 'nothing') {
+          fb.className = 'vpc-quiz-feedback success';
+          fb.innerHTML = '<strong>✓ Correct — nothing extra needed.</strong> Both resources are inside the same global VPC, so they can reach each other over private internal IPs out of the box. The Bangalore VM just connects to the Cloud SQL private IP and traffic flows over Google\'s backbone — never touching the public internet. <em>This is the killer feature of GCP\'s global VPC model and one of the strongest reasons regulated FinTech picks GCP over AWS.</em>';
+        } else {
+          fb.className = 'vpc-quiz-feedback warning';
+          let hint = '';
+          if (ans === 'peering') hint = "VPC peering is for connecting <em>different</em> VPCs. These resources are in the <em>same</em> VPC — they\'re already on the same network. The peering complexity is exactly what GCP\'s global VPC eliminates.";
+          else if (ans === 'vpn') hint = "VPN is for connecting on-prem to GCP, or two separate networks. Same-VPC traffic doesn\'t need a VPN — it travels privately on Google\'s backbone already.";
+          else if (ans === 'public') hint = "<strong>Never</strong>. Public IPs for database traffic = your data going over the open internet, plus a giant attack surface, plus likely a compliance violation. Org policies from Lesson 1.3 should prevent this entirely.";
+          fb.innerHTML = `<strong>Not quite.</strong> ${hint}`;
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .vpc-widget { margin: 2rem 0; }
+  .vpc-node:hover rect { filter: brightness(0.97); }
+  .vpc-detail-panel {
+    background: #2c2a26;
+    border: 1px solid #4a4a48;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+    min-height: 100px;
+    transition: border-color 0.2s;
+  }
+  .vpc-prompt {
+    display: flex; align-items: center; gap: 8px;
+    color: #b4b2a9; font-size: 14px;
+    justify-content: center; padding: 0.5rem 0;
+  }
+  .vpc-prompt-icon { color: #efad4e; font-weight: 500; }
+  .vpc-detail-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .vpc-detail-body {
+    font-size: 14px; line-height: 1.65; margin: 0; color: #f0eee6;
+  }
+  .vpc-detail-body strong { color: #ffffff; font-weight: 500; }
+  .vpc-detail-body em { color: #d3d1c7; font-style: italic; }
+  .vpc-detail-body code {
+    background: #1a1815; color: #efad4e;
+    padding: 2px 6px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 0.9em;
+  }
+  .vpc-quiz {
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+  }
+  .vpc-quiz-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .vpc-quiz-tag {
+    background: var(--color-info-bg); color: var(--color-info);
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: var(--radius-md);
+  }
+  .vpc-quiz-meta { font-size: 13px; color: var(--color-text-secondary); }
+  .vpc-quiz-q { font-size: 15px; margin: 0 0 12px; }
+  .vpc-quiz-q-bottom { font-size: 14px; margin: 0 0 14px; }
+  .vpc-quiz-options {
+    display: grid; grid-template-columns: 1fr;
+    gap: 8px; margin-bottom: 12px;
+  }
+  .vpc-quiz-options button {
+    padding: 10px 14px; font-size: 13px; text-align: left;
+  }
+  .vpc-quiz-feedback {
+    display: none; padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px; line-height: 1.6;
+  }
+  .vpc-quiz-feedback.success { background: var(--color-success-bg); color: var(--color-success); }
+  .vpc-quiz-feedback.warning { background: var(--color-warning-bg); color: var(--color-warning); }
+  .vpc-quiz-feedback code {
+    background: rgba(0,0,0,0.15); padding: 1px 5px;
+    border-radius: 3px; font-family: var(--font-mono); font-size: 0.9em;
+  }
+</style>

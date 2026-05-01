@@ -1,0 +1,113 @@
+---
+title: "VPCs & subnets"
+phase: 2
+lesson: "2.1"
+curriculum: "infra"
+track: "gcp"
+description: "The blueprint of your private cloud city — and why GCP's global VPC model is genuinely unusual."
+analogy: "City planning"
+publishedAt: 2026-04-30
+---
+
+import VPCDiagram from '../../components/VPCDiagram.astro';
+import PacketJourney from '../../components/PacketJourney.astro';
+import Clanky from '../../components/Clanky.astro';
+import StickyNote from '../../components/StickyNote.astro';
+
+If Lesson 1.1 was the **filing cabinet** and Lesson 1.2 was the **bouncer**, this is the part where we finally start drawing pipes between the rooms.
+
+<Clanky question="Wait — why do I even need this? Can't my VMs just... talk to each other?" />
+
+Good question, Clanky. The honest answer: yes, they could, in theory. But that's also how every catastrophic data breach in cloud history starts. *"We just let things talk to each other and it'll be fine."* It is never fine.
+
+A **VPC** (Virtual Private Cloud) is your company's private network *inside* Google Cloud. Every VM you create lives in a VPC. Every database. Every load balancer. They communicate through it. The outside world doesn't see it. You decide what comes in, what goes out, and which neighborhoods get to talk to each other.
+
+Without a VPC, you don't have infrastructure — you have a pile of disconnected boxes.
+
+## The big picture — your private city
+
+Here's what a real production VPC looks like. Click any subnet to see what's inside.
+
+<VPCDiagram />
+
+Three things to notice:
+
+1. **The dashed purple boundary is the VPC** — a single network spanning three continents. One name, one address space (`10.0.0.0/8`), one set of routing rules.
+
+2. **The colored boxes inside are subnets** — regional partitions of the network. The us-central1 subnet owns IPs in the range `10.0.0.0/20`. The europe-west1 subnet owns `10.0.16.0/20`. They never overlap.
+
+3. **Resources live inside subnets, not the VPC directly.** A VM gets a private IP from its subnet's range. A Cloud SQL instance the same. They have addresses on a real network.
+
+<Clanky question="Hold on. My subnet is in us-central1, but the VPC is global. What does 'global' even mean here?" />
+
+This is the question that makes architects coming from AWS reach for coffee.
+
+## Why GCP's VPC is weird (and why that's the whole point)
+
+In **AWS**, a VPC is regional. You have one VPC in `us-east-1`, another VPC in `eu-west-1`, and if you want them to talk you set up VPC peering, or a transit gateway, or both, and probably a VPN as a fallback. It works, but it's *a lot of moving parts.*
+
+In **GCP**, a VPC is global by default. One VPC. One name. Subnets inside it are regional, but the VPC itself spans every region you have subnets in. Resources in different regions can talk to each other over private IPs without any peering, any tunnels, any extra config.
+
+<StickyNote>
+  <strong>Coming from AWS?</strong> This is the single biggest mental model shift. Your old reflex — "I need a VPC per region" — is wrong here. You want <em>one</em> global VPC with regional subnets inside.
+</StickyNote>
+
+To make this concrete, let's follow a packet. Click through the panels:
+
+<PacketJourney />
+
+That whole journey — from a VM in Iowa to a VM in Belgium, including the Atlantic crossing — happened on Google's private fiber. No public internet. No customer-managed VPN. No VPC peering. The packet sees one network the entire way.
+
+This is genuinely the killer feature of GCP for global products. It's also one of the strongest reasons regulated finance customers (your Wells Fargo, your PayPal, your Amex tier) pick GCP over AWS for greenfield projects.
+
+## CIDR ranges — the address book
+
+Every subnet needs an IP range, written in **CIDR notation** like `10.0.0.0/20`. The number after the slash tells you how many addresses the subnet owns:
+
+- `/20` = ~4,000 addresses (good for most subnets)
+- `/24` = 256 addresses (small subnet, fine for a single workload)
+- `/16` = ~65,000 addresses (big regional subnet)
+
+You're not picking these randomly. The architect's job is to plan a **non-overlapping IP scheme** for your entire organization upfront, so that when you connect to your on-premises datacenter (or another cloud, or merge with a company that has its own AWS deployment), the IP ranges don't collide.
+
+<StickyNote>
+  Once your VPC has running workloads, changing IP ranges is <strong>painful</strong>. Plan the address space on day one — even if you only need one subnet today, allocate the ranges as if you'll have fifty.
+</StickyNote>
+
+Most architects use a pattern like:
+
+- `10.0.0.0/8` — the whole organization
+- `10.0.0.0/16` — production environment
+- `10.1.0.0/16` — staging environment
+- `10.2.0.0/16` — dev environment
+- Within production: `10.0.0.0/20` for us-central1, `10.0.16.0/20` for europe-west1, etc.
+
+It looks like math. It is math. Spend an hour with a CIDR calculator before you create your first VPC and you'll save yourself a year of regret.
+
+## Auto mode vs custom mode — the trap
+
+When you create a VPC, GCP asks: auto mode or custom mode?
+
+<Clanky question="Auto mode sounds easier — it's auto! Why wouldn't I want that?" />
+
+Because *auto* picks the IP ranges *for you*, in every region, immediately. You instantly have a subnet in `us-central1`, `europe-west1`, `asia-south1`, `australia-southeast1` — all 30+ regions — using a fixed Google-chosen address scheme.
+
+This sounds convenient. It is a footgun.
+
+The fixed Google ranges (`10.128.0.0/9`) almost always overlap with something else in your network — your on-premises datacenter, your AWS deployment, your acquired-company's VPC. The day you try to set up hybrid networking, you discover your IP ranges collide, and the only fix is to recreate the entire VPC from scratch.
+
+**Always pick custom mode.** Always. Then explicitly create only the subnets you need, in the regions you need, with the IP ranges you chose. It's 5 minutes more setup. It saves a future migration project.
+
+<div class="architect-note">
+  <div class="architect-note-label">Architect's note — the shared VPC pattern</div>
+
+  At Fortune 500 scale, you don't give every team their own VPC. You set up a **shared VPC** in a dedicated "host" project, and let workload projects (managed by individual teams) attach to it.
+
+  This means: networking is owned by a central team (security, compliance, IP planning), but each team still gets their own project for billing and IAM isolation. Combined with org policies from Lesson 1.3 (`compute.restrictSharedVpcSubnetworks`), you can make this the only allowed pattern in the entire org.
+
+  When a Wells Fargo or Amex auditor asks "show me how you control network access boundaries across teams" — shared VPC is the answer they're looking for.
+</div>
+
+## Coming up
+
+In Lesson 2.2 we add the **firewalls and NAT** that decide which traffic actually flows through this network — the toll booths and one-way mirrors. The VPC is the streets; firewalls are the traffic cops.

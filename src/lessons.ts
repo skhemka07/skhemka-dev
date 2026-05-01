@@ -55,7 +55,7 @@ export const gcpInfraLessons: LessonMeta[] = [
     phaseTitle: 'Roads & traffic cops',
     description: 'Drawing the borders of your private cloud city and dividing it into neighborhoods.',
     analogy: 'City planning',
-    status: 'planned',
+    status: 'published',
   },
   {
     lesson: '2.2',
