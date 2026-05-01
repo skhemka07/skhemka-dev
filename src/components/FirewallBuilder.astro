@@ -1,0 +1,433 @@
+---
+// Firewall rule builder — pick a source, target, and port; see whether
+// the packet is allowed or denied by a realistic production ruleset.
+---
+
+<div class="fw-widget" data-fw-widget>
+  <svg width="100%" viewBox="0 0 700 240" role="img" aria-label="Firewall packet evaluation diagram">
+    <title>Packet evaluation through a VPC firewall</title>
+    <desc>A packet travels from a source through the VPC firewall to a target. The firewall evaluates the rules and either allows or denies the packet.</desc>
+
+    <g data-fw-source-box>
+      <rect x="20" y="70" width="180" height="100" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="110" y="100" text-anchor="middle" font-weight="500" font-size="13" fill="#0C447C" data-fw-source-icon>🌍</text>
+      <text x="110" y="125" text-anchor="middle" font-weight="500" font-size="13" fill="#0C447C" data-fw-source-title>Source</text>
+      <text x="110" y="148" text-anchor="middle" font-size="11" fill="#185FA5" data-fw-source-sub>Pick one below</text>
+    </g>
+
+    <g data-fw-arrow-in>
+      <line x1="200" y1="120" x2="278" y2="120" stroke="#888" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="239" y="112" text-anchor="middle" font-size="11" fill="#888" data-fw-arrow-in-label>tcp:—</text>
+    </g>
+
+    <g data-fw-firewall-box>
+      <rect x="280" y="60" width="140" height="120" rx="10" fill="#2c2a26" stroke="#4a4a48" stroke-width="1" data-fw-firewall-rect/>
+      <text x="350" y="92" text-anchor="middle" font-weight="500" font-size="13" fill="#efad4e">VPC FIREWALL</text>
+      <text x="350" y="118" text-anchor="middle" font-size="11" fill="#b4b2a9" data-fw-firewall-line1>—</text>
+      <text x="350" y="138" text-anchor="middle" font-weight="500" font-size="14" fill="#f0eee6" data-fw-firewall-verdict>waiting…</text>
+      <text x="350" y="160" text-anchor="middle" font-size="10" fill="#b4b2a9" data-fw-firewall-line2>pick source + target + port</text>
+    </g>
+
+    <g data-fw-arrow-out>
+      <line x1="420" y1="120" x2="498" y2="120" stroke="#888" stroke-width="1.5" stroke-dasharray="4 4"/>
+    </g>
+
+    <g data-fw-target-box>
+      <rect x="500" y="70" width="180" height="100" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="590" y="100" text-anchor="middle" font-size="13" fill="#085041" data-fw-target-icon>🟢</text>
+      <text x="590" y="125" text-anchor="middle" font-weight="500" font-size="13" fill="#085041" data-fw-target-title>Target</text>
+      <text x="590" y="148" text-anchor="middle" font-size="11" fill="#0F6E56" data-fw-target-sub>Pick one below</text>
+    </g>
+
+    <g>
+      <rect x="20" y="195" width="660" height="38" rx="8" fill="#3c2820" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="350" y="212" text-anchor="middle" font-weight="500" font-size="12" fill="#efad4e">The architect's "why"</text>
+      <text x="350" y="226" text-anchor="middle" font-size="11" fill="#d3d1c7">Every packet hits the firewall. No rule match on ingress = denied. No rule match on egress = allowed by default.</text>
+    </g>
+  </svg>
+
+  <div class="fw-builder">
+    <div class="fw-builder-header">
+      <span class="fw-builder-tag">Build a packet</span>
+      <span class="fw-builder-meta">Pick source + target + port; verdict updates live</span>
+    </div>
+
+    <div class="fw-builder-row">
+      <div class="fw-builder-label">Source (where the packet comes from)</div>
+      <div class="fw-builder-options" data-fw-cat="source">
+        <button data-val="internet">🌍 Public internet<br/><span class="fw-opt-meta">0.0.0.0/0</span></button>
+        <button data-val="corp">🏢 Corp office<br/><span class="fw-opt-meta">203.0.113.0/24</span></button>
+        <button data-val="web">🟢 Web-tier VM<br/><span class="fw-opt-meta">tag: web-server</span></button>
+        <button data-val="bastion">🟢 Bastion VM<br/><span class="fw-opt-meta">tag: bastion</span></button>
+        <button data-val="compromised">💀 Compromised VM<br/><span class="fw-opt-meta">tag: web-server</span></button>
+      </div>
+    </div>
+
+    <div class="fw-builder-row">
+      <div class="fw-builder-label">Target (where the packet is going)</div>
+      <div class="fw-builder-options" data-fw-cat="target">
+        <button data-val="web">🟢 Web-tier VM<br/><span class="fw-opt-meta">tag: web-server</span></button>
+        <button data-val="bastion">🟢 Bastion VM<br/><span class="fw-opt-meta">tag: bastion</span></button>
+        <button data-val="db">🟢 Database VM<br/><span class="fw-opt-meta">tag: db</span></button>
+        <button data-val="internet">🌍 evil.com<br/><span class="fw-opt-meta">198.51.100.5</span></button>
+      </div>
+    </div>
+
+    <div class="fw-builder-row">
+      <div class="fw-builder-label">Port / protocol</div>
+      <div class="fw-builder-options" data-fw-cat="port">
+        <button data-val="22">tcp:22<br/><span class="fw-opt-meta">SSH</span></button>
+        <button data-val="80">tcp:80<br/><span class="fw-opt-meta">HTTP</span></button>
+        <button data-val="443">tcp:443<br/><span class="fw-opt-meta">HTTPS</span></button>
+        <button data-val="3306">tcp:3306<br/><span class="fw-opt-meta">MySQL</span></button>
+        <button data-val="8080">tcp:8080<br/><span class="fw-opt-meta">app port</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="fw-detail-panel" data-fw-panel>
+    <div class="fw-prompt">
+      <span class="fw-prompt-icon">→</span>
+      <span>Pick a source, target, and port to fire a packet through the firewall</span>
+    </div>
+  </div>
+
+  <div class="fw-rules">
+    <div class="fw-rules-header">Active ruleset on this VPC</div>
+    <ul class="fw-rules-list">
+      <li><span class="fw-rule-action allow">ALLOW</span> <code>tcp:443</code> from <code>0.0.0.0/0</code> → tag:<code>web-server</code> <span class="fw-rule-note">— public HTTPS</span></li>
+      <li><span class="fw-rule-action allow">ALLOW</span> <code>tcp:22</code> from <code>203.0.113.0/24</code> → tag:<code>bastion</code> <span class="fw-rule-note">— SSH from corp only</span></li>
+      <li><span class="fw-rule-action allow">ALLOW</span> <code>tcp:22</code> from tag:<code>bastion</code> → tag:<code>db</code> <span class="fw-rule-note">— jump-host pattern</span></li>
+      <li><span class="fw-rule-action allow">ALLOW</span> <code>tcp:3306</code> from tag:<code>web-server</code> → tag:<code>db</code> <span class="fw-rule-note">— web reads MySQL</span></li>
+      <li><span class="fw-rule-action deny">DENY</span> <code>any</code> ingress from <code>any</code> <span class="fw-rule-note">— implicit GCP default (priority 65535)</span></li>
+      <li><span class="fw-rule-action allow soft">ALLOW</span> <code>any</code> egress to <code>any</code> <span class="fw-rule-note">— implicit GCP default (priority 65535)</span></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('[data-fw-widget]').forEach((root) => {
+    type Verdict = { verdict: 'allow' | 'deny'; rule: string; body: string };
+
+    const sourceMeta: Record<string, { label: string; icon: string; sub: string; fill: string; stroke: string; titleColor: string; subColor: string }> = {
+      internet:    { label: 'Public internet',  icon: '🌍', sub: '0.0.0.0/0',         fill: '#FBEAF0', stroke: '#993556', titleColor: '#621D38', subColor: '#993556' },
+      corp:        { label: 'Corp office',      icon: '🏢', sub: '203.0.113.0/24',    fill: '#FAEEDA', stroke: '#854F0B', titleColor: '#633806', subColor: '#854F0B' },
+      web:         { label: 'Web-tier VM',      icon: '🟢', sub: 'tag: web-server',   fill: '#E1F5EE', stroke: '#0F6E56', titleColor: '#085041', subColor: '#0F6E56' },
+      bastion:     { label: 'Bastion VM',       icon: '🟢', sub: 'tag: bastion',      fill: '#E6F1FB', stroke: '#185FA5', titleColor: '#0C447C', subColor: '#185FA5' },
+      compromised: { label: 'Compromised VM',   icon: '💀', sub: 'tag: web-server',   fill: '#fcebeb', stroke: '#a32d2d', titleColor: '#7a1e1e', subColor: '#a32d2d' },
+    };
+
+    const targetMeta: Record<string, { label: string; icon: string; sub: string; fill: string; stroke: string; titleColor: string; subColor: string }> = {
+      web:      { label: 'Web-tier VM',  icon: '🟢', sub: 'tag: web-server', fill: '#E1F5EE', stroke: '#0F6E56', titleColor: '#085041', subColor: '#0F6E56' },
+      bastion:  { label: 'Bastion VM',   icon: '🟢', sub: 'tag: bastion',    fill: '#E6F1FB', stroke: '#185FA5', titleColor: '#0C447C', subColor: '#185FA5' },
+      db:       { label: 'Database VM',  icon: '🟢', sub: 'tag: db',         fill: '#EEEDFE', stroke: '#3C3489', titleColor: '#26215C', subColor: '#3C3489' },
+      internet: { label: 'evil.com',     icon: '🌍', sub: '198.51.100.5',    fill: '#fcebeb', stroke: '#a32d2d', titleColor: '#7a1e1e', subColor: '#a32d2d' },
+    };
+
+    const choices: { source: string | null; target: string | null; port: string | null } = {
+      source: null, target: null, port: null,
+    };
+
+    const evaluate = (s: string, t: string, p: string): Verdict => {
+      const portN = parseInt(p, 10);
+      const isEgressToInternet = t === 'internet';
+
+      // Same VM as source and target — pretend it's a self-loopback (allow), but warn.
+      if (s === t) {
+        return {
+          verdict: 'allow',
+          rule: 'self-traffic',
+          body: `<strong>✓ Allowed — same machine.</strong> A VM talking to itself doesn't cross the firewall. Pick a different source or target to actually exercise a rule.`,
+        };
+      }
+
+      // Explicit allow rules
+      if (s === 'internet' && t === 'web' && portN === 443) {
+        return {
+          verdict: 'allow',
+          rule: 'allow-https-public',
+          body: `<strong>✓ ALLOWED.</strong> Matches rule <code>allow-https-public</code>: <code>tcp:443</code> from <code>0.0.0.0/0</code> to tag <code>web-server</code>. This is the front door — the only port the public internet should ever be able to hit on the web tier. Anything else from <code>0.0.0.0/0</code> falls through to the implicit deny.`,
+        };
+      }
+      if (s === 'corp' && t === 'bastion' && portN === 22) {
+        return {
+          verdict: 'allow',
+          rule: 'allow-ssh-corp-bastion',
+          body: `<strong>✓ ALLOWED.</strong> Matches rule <code>allow-ssh-corp-bastion</code>: <code>tcp:22</code> from <code>203.0.113.0/24</code> (corp office) to tag <code>bastion</code>. SSH from any other source IP — even another VPN-connected office — would be denied. <em>The architect's reflex: SSH is never open to the internet, only to a known corp range, only to a single hardened bastion.</em>`,
+        };
+      }
+      if (s === 'bastion' && t === 'db' && portN === 22) {
+        return {
+          verdict: 'allow',
+          rule: 'allow-bastion-to-db',
+          body: `<strong>✓ ALLOWED.</strong> Matches rule <code>allow-bastion-to-db</code>: <code>tcp:22</code> from tag <code>bastion</code> to tag <code>db</code>. This is the jump-host pattern — engineers SSH first to the bastion (which is the only host that accepts SSH from corp), then from the bastion to the database VM. Two hops, two audited choke points.`,
+        };
+      }
+      if ((s === 'web' || s === 'compromised') && t === 'db' && portN === 3306) {
+        const flavor = s === 'compromised'
+          ? ` <em>The catch: this rule allows a <strong>compromised</strong> web VM to read your database. Tag-based rules don't know which process on the VM is talking — they only know the tag. That's why you need defense in depth: workload identity, IAM on the database itself, query-level access controls.</em>`
+          : ` This is the only port the web tier needs on the database — no SSH, no admin protocols, just MySQL. Tightly scoped by tag on both sides.`;
+        return {
+          verdict: 'allow',
+          rule: 'allow-web-to-db-mysql',
+          body: `<strong>✓ ALLOWED.</strong> Matches rule <code>allow-web-to-db-mysql</code>: <code>tcp:3306</code> from tag <code>web-server</code> to tag <code>db</code>.${flavor}`,
+        };
+      }
+
+      // Egress to internet — falls into the implicit allow-all-egress trap
+      if (isEgressToInternet) {
+        const exfilWarning = s === 'compromised'
+          ? `<strong>⚠ ALLOWED — and that's the bug.</strong> A compromised VM phoning home to <code>evil.com:${portN}</code> is allowed out by GCP's <em>implicit allow-all egress</em> default. No alarm. No log entry. No deny. This is exactly how data exfiltration works in cloud environments — egress is open by default and most teams never close it. <strong>The fix: deny default egress at the org level, route legitimate outbound through Cloud NAT, and only allow specific destinations.</strong>`
+          : `<strong>✓ ALLOWED — by GCP's implicit allow-all egress default.</strong> No explicit rule matched, but egress falls through to "allow" instead of "deny." Convenient for development. <em>Catastrophic for security if you don't change it.</em> A compromised version of this same VM could phone home to anywhere on the internet using exactly this path.`;
+        return { verdict: 'allow', rule: 'implicit-allow-egress', body: exfilWarning };
+      }
+
+      // Special case: SSH from corp directly to web/db (not via bastion)
+      if (s === 'corp' && (t === 'web' || t === 'db') && portN === 22) {
+        return {
+          verdict: 'deny',
+          rule: 'implicit-deny-ingress',
+          body: `<strong>✗ DENIED — by implicit deny ingress.</strong> SSH from corp is only allowed to the <code>bastion</code> tag, not directly to web or database tiers. This is the jump-host pattern: corp → bastion → internal VMs. Two audited hops, no direct path. Even an Owner SSH-ing in still goes through the bastion.`,
+        };
+      }
+
+      // Internet trying to hit anything other than web:443
+      if (s === 'internet' && t !== 'internet') {
+        const why = t === 'web' && portN !== 443
+          ? `The public web server only accepts <code>tcp:443</code>. Port <code>${portN}</code> is not in any allow rule for <code>0.0.0.0/0</code>, so the implicit deny ingress drops the packet at the firewall.`
+          : `Nothing in the ruleset allows <code>0.0.0.0/0</code> to reach tag <code>${t}</code>. Only the web tier accepts public traffic, and only on 443. Everything else is invisible from the internet.`;
+        return {
+          verdict: 'deny',
+          rule: 'implicit-deny-ingress',
+          body: `<strong>✗ DENIED — by implicit deny ingress.</strong> ${why}`,
+        };
+      }
+
+      // Same-VPC traffic with no explicit allow
+      const reason = (() => {
+        if (t === 'db' && portN !== 3306 && !(s === 'bastion' && portN === 22)) {
+          return `The database tier only accepts <code>tcp:3306</code> from tag <code>web-server</code>, and <code>tcp:22</code> from tag <code>bastion</code>. Anything else hits the implicit deny.`;
+        }
+        if (t === 'web' && portN !== 443) {
+          return `The web tier only accepts <code>tcp:443</code> from the public internet. Other ports are denied even from inside the VPC.`;
+        }
+        if (t === 'bastion' && !(s === 'corp' && portN === 22)) {
+          return `The bastion only accepts <code>tcp:22</code> from <code>203.0.113.0/24</code>. Internal VMs cannot reach it — that would defeat the choke point.`;
+        }
+        return `No explicit rule allows this combination. Ingress falls through to the implicit deny at priority 65535.`;
+      })();
+
+      return {
+        verdict: 'deny',
+        rule: 'implicit-deny-ingress',
+        body: `<strong>✗ DENIED — by implicit deny ingress.</strong> ${reason}`,
+      };
+    };
+
+    const sourceTitle = root.querySelector<SVGTextElement>('[data-fw-source-title]')!;
+    const sourceIcon  = root.querySelector<SVGTextElement>('[data-fw-source-icon]')!;
+    const sourceSub   = root.querySelector<SVGTextElement>('[data-fw-source-sub]')!;
+    const sourceRect  = root.querySelector<SVGRectElement>('[data-fw-source-box] rect')!;
+    const targetTitle = root.querySelector<SVGTextElement>('[data-fw-target-title]')!;
+    const targetIcon  = root.querySelector<SVGTextElement>('[data-fw-target-icon]')!;
+    const targetSub   = root.querySelector<SVGTextElement>('[data-fw-target-sub]')!;
+    const targetRect  = root.querySelector<SVGRectElement>('[data-fw-target-box] rect')!;
+    const arrowInLabel= root.querySelector<SVGTextElement>('[data-fw-arrow-in-label]')!;
+    const arrowInLine = root.querySelector<SVGLineElement>('[data-fw-arrow-in] line')!;
+    const arrowOutLine= root.querySelector<SVGLineElement>('[data-fw-arrow-out] line')!;
+    const fwRect      = root.querySelector<SVGRectElement>('[data-fw-firewall-rect]')!;
+    const fwLine1     = root.querySelector<SVGTextElement>('[data-fw-firewall-line1]')!;
+    const fwVerdict   = root.querySelector<SVGTextElement>('[data-fw-firewall-verdict]')!;
+    const fwLine2     = root.querySelector<SVGTextElement>('[data-fw-firewall-line2]')!;
+    const panel       = root.querySelector<HTMLDivElement>('[data-fw-panel]')!;
+
+    const renderSVG = () => {
+      // Update source visuals
+      if (choices.source) {
+        const m = sourceMeta[choices.source];
+        sourceRect.setAttribute('fill', m.fill);
+        sourceRect.setAttribute('stroke', m.stroke);
+        sourceIcon.textContent = m.icon;
+        sourceTitle.textContent = m.label;
+        sourceTitle.setAttribute('fill', m.titleColor);
+        sourceSub.textContent = m.sub;
+        sourceSub.setAttribute('fill', m.subColor);
+      }
+      // Update target visuals
+      if (choices.target) {
+        const m = targetMeta[choices.target];
+        targetRect.setAttribute('fill', m.fill);
+        targetRect.setAttribute('stroke', m.stroke);
+        targetIcon.textContent = m.icon;
+        targetTitle.textContent = m.label;
+        targetTitle.setAttribute('fill', m.titleColor);
+        targetSub.textContent = m.sub;
+        targetSub.setAttribute('fill', m.subColor);
+      }
+      // Update port arrow label
+      arrowInLabel.textContent = choices.port ? `tcp:${choices.port}` : 'tcp:—';
+
+      // Run evaluation if all set
+      if (choices.source && choices.target && choices.port) {
+        const v = evaluate(choices.source, choices.target, choices.port);
+        if (v.verdict === 'allow') {
+          fwRect.setAttribute('stroke', '#5dcaa5');
+          fwRect.setAttribute('stroke-width', '2');
+          fwVerdict.textContent = '✓ ALLOW';
+          fwVerdict.setAttribute('fill', '#5dcaa5');
+          fwLine1.textContent = `rule: ${v.rule}`;
+          fwLine2.textContent = 'packet passes';
+          arrowInLine.setAttribute('stroke', '#5dcaa5');
+          arrowOutLine.setAttribute('stroke', '#5dcaa5');
+          arrowOutLine.setAttribute('stroke-dasharray', '');
+        } else {
+          fwRect.setAttribute('stroke', '#e08585');
+          fwRect.setAttribute('stroke-width', '2');
+          fwVerdict.textContent = '✗ DENY';
+          fwVerdict.setAttribute('fill', '#e08585');
+          fwLine1.textContent = `rule: ${v.rule}`;
+          fwLine2.textContent = 'packet dropped';
+          arrowInLine.setAttribute('stroke', '#e08585');
+          arrowOutLine.setAttribute('stroke', '#4a4a48');
+          arrowOutLine.setAttribute('stroke-dasharray', '4 4');
+        }
+
+        const accent = v.verdict === 'allow' ? '#5dcaa5' : '#e08585';
+        panel.innerHTML = `
+          <div class="fw-detail-title" style="color: ${accent};">${v.verdict === 'allow' ? '✓ ALLOWED' : '✗ DENIED'} — ${choices.source} → ${choices.target} on tcp:${choices.port}</div>
+          <p class="fw-detail-body">${v.body}</p>
+        `;
+        panel.style.borderColor = accent;
+      } else {
+        // Reset firewall block to neutral
+        fwRect.setAttribute('stroke', '#4a4a48');
+        fwRect.setAttribute('stroke-width', '1');
+        arrowInLine.setAttribute('stroke', '#888');
+        arrowOutLine.setAttribute('stroke', '#888');
+        arrowOutLine.setAttribute('stroke-dasharray', '4 4');
+      }
+    };
+
+    root.querySelectorAll<HTMLDivElement>('[data-fw-cat]').forEach((row) => {
+      const cat = row.dataset.fwCat as 'source' | 'target' | 'port';
+      row.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          choices[cat] = btn.dataset.val!;
+          row.querySelectorAll<HTMLButtonElement>('button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          renderSVG();
+        });
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  .fw-widget { margin: 2rem 0; }
+
+  .fw-builder {
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-top: 1rem;
+  }
+  .fw-builder-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .fw-builder-tag {
+    background: var(--color-info-bg); color: var(--color-info);
+    font-size: 12px; font-weight: 500;
+    padding: 4px 10px; border-radius: var(--radius-md);
+  }
+  .fw-builder-meta { font-size: 13px; color: var(--color-text-secondary); }
+  .fw-builder-row { margin-bottom: 14px; }
+  .fw-builder-row:last-child { margin-bottom: 0; }
+  .fw-builder-label { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .fw-builder-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 6px;
+  }
+  .fw-builder-options button {
+    font-size: 13px;
+    padding: 8px 10px;
+    text-align: left;
+    line-height: 1.35;
+  }
+  .fw-builder-options button.selected {
+    background: var(--color-info-bg);
+    border-color: var(--color-info);
+    color: var(--color-info);
+  }
+  .fw-opt-meta {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+  }
+  .fw-builder-options button.selected .fw-opt-meta { color: var(--color-info); opacity: 0.8; }
+
+  .fw-detail-panel {
+    background: #2c2a26;
+    border: 1px solid #4a4a48;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+    min-height: 100px;
+    transition: border-color 0.2s;
+  }
+  .fw-prompt {
+    display: flex; align-items: center; gap: 8px;
+    color: #b4b2a9; font-size: 14px;
+    justify-content: center; padding: 0.5rem 0;
+  }
+  .fw-prompt-icon { color: #efad4e; font-weight: 500; }
+  .fw-detail-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .fw-detail-body {
+    font-size: 14px; line-height: 1.65; margin: 0; color: #f0eee6;
+  }
+  .fw-detail-body strong { color: #ffffff; font-weight: 500; }
+  .fw-detail-body em { color: #d3d1c7; font-style: italic; }
+  .fw-detail-body code {
+    background: #1a1815; color: #efad4e;
+    padding: 2px 6px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 0.9em;
+  }
+
+  .fw-rules {
+    background: var(--color-bg-secondary);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+  }
+  .fw-rules-header {
+    font-size: 12px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--color-text-secondary);
+    margin-bottom: 10px;
+  }
+  .fw-rules-list {
+    list-style: none; padding: 0; margin: 0;
+    font-size: 13px; line-height: 1.9;
+  }
+  .fw-rules-list li {
+    display: flex; align-items: baseline; flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0;
+    border-bottom: 0.5px dashed var(--color-border);
+  }
+  .fw-rules-list li:last-child { border-bottom: none; }
+  .fw-rule-action {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+    padding: 2px 7px; border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .fw-rule-action.allow { background: var(--color-success-bg); color: var(--color-success); }
+  .fw-rule-action.allow.soft { opacity: 0.65; }
+  .fw-rule-action.deny  { background: var(--color-danger-bg);  color: var(--color-danger); }
+  .fw-rules-list code {
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    padding: 1px 5px; border-radius: 3px;
+    font-family: var(--font-mono); font-size: 0.9em;
+  }
+  .fw-rule-note { color: var(--color-text-tertiary); font-size: 12px; }
+</style>
