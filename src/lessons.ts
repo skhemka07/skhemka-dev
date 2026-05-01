@@ -65,7 +65,7 @@ export const gcpInfraLessons: LessonMeta[] = [
     phaseTitle: 'Roads & traffic cops',
     description: 'Toll booths and one-way mirrors — what gets in, and how private servers reach the internet.',
     analogy: 'The toll booth and one-way mirror',
-    status: 'planned',
+    status: 'published',
   },
   {
     lesson: '2.3',
