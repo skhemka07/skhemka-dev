@@ -1,0 +1,98 @@
+---
+title: "Firewalls & Cloud NAT"
+phase: 2
+lesson: "2.2"
+curriculum: "infra"
+track: "gcp"
+description: "Toll booths and one-way mirrors — what gets in, and how private servers reach the internet."
+analogy: "The toll booth and one-way mirror"
+publishedAt: 2026-05-01
+---
+
+import FirewallBuilder from '../../components/FirewallBuilder.astro';
+import Clanky from '../../components/Clanky.astro';
+import StickyNote from '../../components/StickyNote.astro';
+
+If Lesson 2.1 was the **streets** of your private cloud city, this lesson is the **traffic cops**. The streets are useless if anything can drive on them — and a VPC without firewall rules is exactly that. Every VM can talk to every other VM, on every port, in every direction. Fine for a hackathon. For an Amex audit, it's a pre-written finding.
+
+<Clanky question="Wait — doesn't 'private VPC' already mean it's secure? Why do I need firewalls on top of that?" />
+
+A VPC isolates your network *from the public internet*. That's a real boundary. But inside the VPC, the door between every VM is wide open by default. The Cloud SQL database in `us-central1` accepts MySQL connections from any VM in the VPC, including the dev sandbox in `asia-south1` that an intern is testing with. If that intern's VM gets compromised — phishing, supply-chain, leaked SSH key — the attacker is already on the same network as the production database. There is nothing between them.
+
+A **VPC firewall rule** is a single line of policy that says: *allow* (or *deny*) traffic from these sources to these targets on these ports. Build a few in the console and they look almost trivial. The skill isn't writing one rule. The skill is building a **ruleset** — a small number of rules that, taken together, describe exactly the traffic patterns your business actually needs and refuse everything else.
+
+Below is a real production ruleset on a three-tier app: a public web tier, a database tier, and a bastion host for SSH. Pick a source, target, and port, and watch the firewall evaluate.
+
+<FirewallBuilder />
+
+## The deny-all default — and why everyone gets it wrong
+
+GCP applies two implicit firewall rules to every new VPC, both at priority 65535 (the lowest possible — every other rule wins ties):
+
+1. **Deny all ingress** — nothing from outside the VPC reaches in unless an explicit rule says yes
+2. **Allow all egress** — anything inside the VPC reaches anywhere unless an explicit rule says no
+
+Read those twice. *Egress is wide open by default.* Most architects coming from on-prem networking assume both directions are denied — they're not. That asymmetry is exactly how data exfiltration succeeds in cloud environments. The compromise happens through some legitimate inbound channel (a vulnerable web server, a phished credential), and then the attacker pivots outbound to their own infrastructure to stage the stolen data. Inbound was hard. Outbound was the GCP default.
+
+<Clanky question="So if my VM gets compromised, it can phone home to anywhere on the internet? By default? Even with no firewall rules I added?" />
+
+Yes. Try it in the widget — set source to *Compromised VM* and target to *evil.com*. The firewall waves it through and tells you why. The fix isn't to be cleverer with detection after the fact. The fix is to flip the default: deny egress, then explicitly route legitimate outbound through Cloud NAT (where it gets logged) or Private Google Access (Lesson 2.4).
+
+## Cloud NAT — the one-way mirror
+
+The reason "deny all egress" is hard to actually deploy: most VMs *do* need outbound traffic. They pull container images, hit `apt-get update`, call third-party APIs, send metrics to your observability stack. If you flat-out deny egress, nothing works.
+
+**Cloud NAT** is the answer. It's a regional managed service that gives a private VM (one with no external IP) a way to reach the public internet for outbound traffic only. The internet cannot reach back in — there's no inbound mapping. It's a one-way mirror: your VMs see out, the internet sees nothing.
+
+Three properties make it the cornerstone of egress control:
+
+- **No external IPs needed.** Your fleet of VMs all sit on private IPs in their subnets. Org policy `compute.vmExternalIpAccess` denies anyone from creating a VM with a public IP. The only way out is through Cloud NAT.
+- **Centralized logging.** Every NAT translation can be logged to Cloud Logging — source VM, destination IP, port, timestamp. When the security team asks *"what did host `web-prod-04` talk to last Tuesday?"*, you have a row-level answer.
+- **Predictable source IPs.** All outbound traffic appears to come from a small set of NAT IPs. You can hand those IPs to a third-party SaaS for IP allowlisting, and rotating a VM doesn't break the integration.
+
+<StickyNote>
+  <strong>Coming from AWS?</strong> Same idea as a NAT gateway, but cheaper and easier — Cloud NAT is regional, software-defined, and doesn't sit on a VM you have to size, patch, and pay for per AZ. Set it up once per region and forget it.
+</StickyNote>
+
+## Tags vs service accounts — the choice that ages
+
+When you write a firewall rule, the *target* (and often the *source*) is identified by either a **network tag** or a **service account**. Both work. They are not interchangeable.
+
+A **network tag** is a string label you stick on a VM at create time — `web-server`, `db`, `bastion`. The rule "allow tcp:443 from 0.0.0.0/0 to tag:web-server" means: any VM with that string in its tag list accepts this traffic. Tags are easy to apply and easy to read in a console review.
+
+A **service account** is the IAM identity attached to the VM (Lesson 1.2). The rule "allow tcp:3306 from sa:web-app@... to sa:db@..." means: any VM running as the web-app service account can reach any VM running as the db service account on MySQL.
+
+The difference matters when an attacker compromises a developer's IAM account. With **tags**, anyone with `compute.instances.setTags` on a VM can change its tag and instantly inherit the firewall rules attached to that tag. A junior engineer fixing a bug can accidentally promote a sandbox VM into the production database's allowlist. With **service accounts**, changing the SA on a running VM requires `iam.serviceAccounts.actAs` *and* a stop/start — much narrower IAM surface, much harder to do by accident, much louder in the audit log.
+
+The architect's pattern: **tags in dev and staging where speed matters, service accounts in production where blast-radius matters.** And in regulated environments — Wells Fargo, Amex, federal — service accounts everywhere, full stop.
+
+## The four rules that cover 90% of production
+
+After you've written a few hundred firewall rules, you notice the same four patterns keep coming back:
+
+1. **Public ingress** — `tcp:443 from 0.0.0.0/0 to tag:web-tier`. Exactly one port, exactly one tier. The web tier is the only thing on the internet, and it only accepts HTTPS.
+2. **Bastion ingress** — `tcp:22 from <corp-cidr> to tag:bastion`. SSH is never open to the internet. It's open from one specific IP range to one specific tag, and that's the only path in for humans.
+3. **Tier-to-tier** — `tcp:3306 from tag:web-tier to tag:db`. Tightly scoped: the only port the web tier uses on the database tier, in the only direction.
+4. **Egress to NAT** — `allow egress to NAT-IPs only` + `deny egress to everything else`. With Cloud NAT in front, all outbound traffic flows through one logged choke point.
+
+Notice what's *not* there: no rule says "allow all from the VPC to the VPC." That's the rule everyone writes on day one and regrets on day three hundred, when they discover the dev VM with the compromised SSH key has a clean path to production.
+
+<StickyNote>
+  Once you've gone live, <strong>changing firewall rules under load is risky</strong>. Plan the four-rule pattern on day one. A bad rule applied during business hours can sever every database connection in production for the duration of "let me revert that real quick."
+</StickyNote>
+
+<div class="architect-note">
+  <div class="architect-note-label">Architect's note — the audit conversation</div>
+
+  When a SOC 2 or FedRAMP auditor asks *"show me how you control egress,"* you cannot answer *"we trust our developers to write good firewall rules."* The answer they want is three controls stacked:
+
+  - **Org policy** `compute.vmExternalIpAccess` denies external IPs on any VM (Lesson 1.3 — even an Owner can't override it)
+  - **Default deny egress** at the VPC level, with explicit allows only for known destinations
+  - **Cloud NAT** for everything else, with logs streamed to a central project the developers can't reach
+
+  Three controls, all enforced by architecture, none of them reliant on a human remembering the rule. That's the conversation regulated-finance auditors are looking for. *That's* what gets you certified.
+</div>
+
+## Coming up
+
+In Lesson 2.3 we cover **Cloud Load Balancing** — the front door through which internet traffic actually reaches the web tier we just protected. Where firewalls control *what's allowed*, load balancers control *where it goes*: across regions, across versions, and around failures.
