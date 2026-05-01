@@ -1,0 +1,297 @@
+---
+// Org Policies interactive — fixed dark slate panels for guaranteed readability
+---
+
+<div class="op-widget" data-op-widget>
+  <svg width="100%" viewBox="0 0 680 380" role="img">
+    <title>Organization policies in the GCP hierarchy</title>
+    <desc>Three policy guardrails attached to the Organization node, flowing down to all folders, projects, and resources below.</desc>
+    <defs>
+      <marker id="op-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <g class="op-node" data-policy="building" style="cursor:pointer">
+      <rect x="80" y="20" width="520" height="64" rx="10" fill="#FBEAF0" stroke="#993556" stroke-width="0.5"/>
+      <text x="340" y="46" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#621D38">Organization</text>
+      <text x="340" y="66" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#993556">The whole building — yourcompany.com — where org policies attach</text>
+    </g>
+
+    <g class="op-policy" data-policy="public-buckets" style="cursor:pointer">
+      <rect x="40" y="110" width="180" height="80" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="130" y="135" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="13" fill="#633806">🚫 No public buckets</text>
+      <text x="130" y="158" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">storage.publicAccess</text>
+      <text x="130" y="174" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">Prevention</text>
+    </g>
+
+    <g class="op-policy" data-policy="region-lock" style="cursor:pointer">
+      <rect x="250" y="110" width="180" height="80" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text x="340" y="135" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="13" fill="#085041">🌍 Region lock</text>
+      <text x="340" y="158" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">resourceLocations</text>
+      <text x="340" y="174" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">Data residency</text>
+    </g>
+
+    <g class="op-policy" data-policy="external-iam" style="cursor:pointer">
+      <rect x="460" y="110" width="180" height="80" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text x="550" y="135" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="13" fill="#0C447C">🔒 Domain-only IAM</text>
+      <text x="550" y="158" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">allowedPolicyMembers</text>
+      <text x="550" y="174" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">Identity boundary</text>
+    </g>
+
+    <line x1="130" y1="195" x2="130" y2="220" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <line x1="340" y1="195" x2="340" y2="220" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <line x1="550" y1="195" x2="550" y2="220" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
+    <line x1="130" y1="220" x2="550" y2="220" stroke="#888" stroke-width="0.5"/>
+    <line x1="340" y1="220" x2="340" y2="245" stroke="#888" stroke-width="0.5" marker-end="url(#op-arrow)"/>
+
+    <g>
+      <rect x="80" y="252" width="520" height="50" rx="8" fill="#2c2a26" stroke="#4a4a48" stroke-width="0.5"/>
+      <text x="340" y="270" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#f0eee6">Every folder, project, and resource below</text>
+      <text x="340" y="288" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#b4b2a9">Policies inherit downward — even Owners cannot violate them</text>
+    </g>
+
+    <g>
+      <rect x="80" y="320" width="520" height="50" rx="8" fill="#3c2820" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="340" y="338" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#efad4e">The architect's "why"</text>
+      <text x="340" y="356" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#d3d1c7">Trust the architecture, not the engineers' good intentions</text>
+    </g>
+  </svg>
+
+  <div class="op-detail-panel" data-op-panel>
+    <div class="op-prompt">
+      <span class="op-prompt-icon">→</span>
+      <span>Click any policy above to read what it does and when you'd use it</span>
+    </div>
+  </div>
+
+  <div class="op-quiz">
+    <div class="op-quiz-header">
+      <span class="op-quiz-tag">Build your guardrails</span>
+      <span class="op-quiz-meta">Regulated FinTech scenario</span>
+    </div>
+    <p class="op-quiz-q">You're the Chief Architect for a <strong>regulated EU FinTech</strong>. Auditors will visit in 60 days. Pick the org policies you'd set at the Organization level.</p>
+
+    <div class="op-quiz-options" data-op-options>
+      <button data-policy="public-buckets">🚫 Block public Cloud Storage buckets</button>
+      <button data-policy="region-lock">🌍 Restrict resource locations to EU regions only</button>
+      <button data-policy="external-iam">🔒 Allow only @yourcompany.com identities</button>
+      <button data-policy="vm-external-ip">🌐 Block VMs from getting external IPs</button>
+      <button data-policy="sa-key-creation">🔑 Disable service account key creation</button>
+      <button data-policy="none">⛔ None — trust our engineers to do the right thing</button>
+    </div>
+
+    <button class="op-check-btn" data-op-check>Check my policy set</button>
+
+    <div class="op-quiz-feedback" data-op-feedback></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLDivElement>('[data-op-widget]').forEach((root) => {
+    const policyData: Record<string, { title: string; accent: string; body: string }> = {
+      building: {
+        title: "Organization — where the rules live",
+        accent: "#e88aab",
+        body: "Org policies attach at the Organization node and inherit downward to every folder, project, and resource. Unlike IAM (which says <em>who can do what</em>), org policies say <em>what nobody can do, ever</em> — even Owners. They're the technical equivalent of a fire code: not a permission grant, but a hard prohibition baked into the architecture itself."
+      },
+      "public-buckets": {
+        title: "🚫 No public buckets — storage.publicAccessPrevention",
+        accent: "#efad4e",
+        body: "When set to <code>enforced</code>, no Cloud Storage bucket in the entire org can be made public. Even an Owner with full IAM rights cannot toggle <code>allUsers</code> access on a bucket. This is the single most important policy for any company handling customer data — and the most common audit finding when missing. <strong>The pattern: deny dangerous things at the org level, then grant exceptions only at specific folders if genuinely needed.</strong>"
+      },
+      "region-lock": {
+        title: "🌍 Region lock — gcp.resourceLocations",
+        accent: "#5dcaa5",
+        body: "Restricts where resources can be created — e.g., EU-only for GDPR compliance, India-only for RBI data localization, US-only for FedRAMP workloads. Without this policy, a developer in your Bangalore office could accidentally spin up a Cloud SQL instance in us-central1 holding regulated EU customer data — and you've just become a GDPR violation. Set this once at the Org level and the entire company physically cannot create resources in the wrong region."
+      },
+      "external-iam": {
+        title: "🔒 Domain-only IAM — iam.allowedPolicyMemberDomains",
+        accent: "#7eb6f0",
+        body: "Restricts IAM bindings to identities from your own organization's domain. Without it, an engineer can grant <code>Owner</code> on a project to <code>random-consultant@gmail.com</code>. With it, only <code>@yourcompany.com</code> identities can ever appear in IAM bindings anywhere in the org. For Fortune 500 clients, this is non-negotiable — the kind of thing that gets flagged in a SOC 2 audit if missing."
+      }
+    };
+
+    const panel = root.querySelector<HTMLDivElement>('[data-op-panel]')!;
+
+    root.querySelectorAll<SVGGElement>('.op-node, .op-policy').forEach((node) => {
+      node.addEventListener('click', () => {
+        const key = node.dataset.policy!;
+        const data = policyData[key];
+        if (!data) return;
+        panel.innerHTML = `
+          <div class="op-detail-title" style="color: ${data.accent};">${data.title}</div>
+          <p class="op-detail-body">${data.body}</p>
+        `;
+        panel.style.borderColor = data.accent;
+      });
+    });
+
+    const selected = new Set<string>();
+    const optionsEl = root.querySelector<HTMLDivElement>('[data-op-options]')!;
+    optionsEl.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.policy!;
+        if (key === 'none') {
+          selected.clear();
+          optionsEl.querySelectorAll<HTMLButtonElement>('button').forEach(b => {
+            b.style.background = '';
+            b.style.borderColor = '';
+            b.style.color = '';
+          });
+          selected.add('none');
+          btn.style.background = '#3a1818';
+          btn.style.borderColor = '#e08585';
+          btn.style.color = '#e08585';
+          return;
+        }
+        const noneBtn = optionsEl.querySelector<HTMLButtonElement>('[data-policy="none"]')!;
+        noneBtn.style.background = '';
+        noneBtn.style.borderColor = '';
+        noneBtn.style.color = '';
+        selected.delete('none');
+
+        if (selected.has(key)) {
+          selected.delete(key);
+          btn.style.background = '';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        } else {
+          selected.add(key);
+          btn.style.background = 'var(--color-info-bg)';
+          btn.style.borderColor = 'var(--color-info)';
+          btn.style.color = 'var(--color-info)';
+        }
+      });
+    });
+
+    const fb = root.querySelector<HTMLDivElement>('[data-op-feedback]')!;
+    root.querySelector<HTMLButtonElement>('[data-op-check]')!.addEventListener('click', () => {
+      fb.style.display = 'block';
+
+      if (selected.has('none') || selected.size === 0) {
+        fb.className = 'op-quiz-feedback warning';
+        fb.innerHTML = '<strong>Auditor visits in 60 days. You will fail.</strong> "Trust our engineers" is not a control — it\'s a hope. The whole point of org policies is that engineers <em>cannot</em> violate them, even when they\'re tired, in a hurry, or genuinely don\'t know better. Pick at least the three core policies (public buckets, region lock, domain-only IAM) and try again.';
+        return;
+      }
+
+      const must = ['public-buckets', 'region-lock', 'external-iam'];
+      const missing = must.filter(p => !selected.has(p));
+      const bonus = ['vm-external-ip', 'sa-key-creation'].filter(p => selected.has(p));
+
+      if (missing.length === 0) {
+        fb.className = 'op-quiz-feedback success';
+        let msg = '<strong>✓ Solid baseline.</strong> Public buckets blocked (data leak prevention), region locked to EU (GDPR data residency), domain-only IAM (no rogue gmail accounts in your bindings). This is the minimum table-stakes policy set for any regulated FinTech.';
+        if (bonus.length > 0) {
+          msg += ` <strong>Bonus credit</strong> for ${bonus.length === 2 ? 'both' : 'the'} additional ${bonus.length === 1 ? 'policy' : 'policies'} — `;
+          if (selected.has('vm-external-ip')) msg += 'blocking external IPs on VMs eliminates a huge attack surface (forces all internet traffic through a NAT or load balancer where you can log it). ';
+          if (selected.has('sa-key-creation')) msg += 'disabling service account key creation forces workload identity instead — the #1 GCP credential leak source on GitHub goes away entirely. ';
+          msg += 'You\'re thinking like a real architect: build the controls into the platform, not the people.';
+        } else {
+          msg += ' Two bonus policies you could add: blocking VM external IPs (forces NAT/load-balancer-only egress) and disabling service account key creation (kills the #1 source of credential leaks).';
+        }
+        fb.innerHTML = msg;
+      } else {
+        fb.className = 'op-quiz-feedback warning';
+        let hint = '<strong>Close — but missing critical policies for a regulated FinTech.</strong><ul>';
+        if (missing.includes('public-buckets')) hint += '<li>Without <strong>blocking public buckets</strong>: one developer toggling <code>allUsers</code> on a bucket holding KYC data is a regulatory disaster. This is non-negotiable.</li>';
+        if (missing.includes('region-lock')) hint += '<li>Without <strong>region lock</strong>: EU customer data could be stored in us-central1 by accident — instant GDPR violation. Auditors will find this in the first 10 minutes.</li>';
+        if (missing.includes('external-iam')) hint += '<li>Without <strong>domain-only IAM</strong>: any engineer can grant access to a personal Gmail account. SOC 2 will flag this immediately.</li>';
+        hint += '</ul>';
+        fb.innerHTML = hint;
+      }
+    });
+  });
+</script>
+
+<style>
+  .op-widget { margin: 2rem 0; }
+  .op-node:hover rect, .op-policy:hover rect { filter: brightness(0.97); }
+  .op-detail-panel {
+    background: #2c2a26;
+    border: 1px solid #4a4a48;
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+    min-height: 100px;
+    transition: border-color 0.2s;
+  }
+  .op-prompt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b4b2a9;
+    font-size: 14px;
+    justify-content: center;
+    padding: 0.5rem 0;
+  }
+  .op-prompt-icon {
+    color: #efad4e;
+    font-weight: 500;
+  }
+  .op-detail-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .op-detail-body {
+    font-size: 14px;
+    line-height: 1.65;
+    margin: 0;
+    color: #f0eee6;
+  }
+  .op-detail-body strong { color: #ffffff; font-weight: 500; }
+  .op-detail-body em { color: #d3d1c7; font-style: italic; }
+  .op-detail-body code {
+    background: #1a1815;
+    color: #efad4e;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .op-quiz {
+    background: var(--color-bg-card);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+  }
+  .op-quiz-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .op-quiz-tag {
+    background: var(--color-info-bg);
+    color: var(--color-info);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--radius-md);
+  }
+  .op-quiz-meta { font-size: 13px; color: var(--color-text-secondary); }
+  .op-quiz-q { font-size: 15px; margin: 0 0 16px; }
+  .op-quiz-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .op-quiz-options button {
+    font-size: 13px;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .op-check-btn { width: 100%; padding: 10px; font-size: 14px; font-weight: 500; }
+  .op-quiz-feedback {
+    display: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .op-quiz-feedback.success { background: var(--color-success-bg); color: var(--color-success); }
+  .op-quiz-feedback.warning { background: var(--color-warning-bg); color: var(--color-warning); }
+  .op-quiz-feedback ul { margin: 8px 0 0; padding-left: 20px; }
+  .op-quiz-feedback li { margin-bottom: 6px; }
+  .op-quiz-feedback code {
+    background: rgba(0,0,0,0.15);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+</style>

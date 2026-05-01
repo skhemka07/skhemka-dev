@@ -1,0 +1,69 @@
+---
+title: "Organization policies"
+phase: 1
+lesson: "1.3"
+curriculum: "infra"
+track: "gcp"
+description: "Org-wide guardrails that prevent even an Owner from doing dumb things — the technical foundation of regulatory compliance."
+analogy: "The fire code for your whole building"
+publishedAt: 2026-04-30
+---
+
+import OrgPoliciesWidget from '../../components/OrgPoliciesWidget.astro';
+
+In Lesson 1.2, we hired a bouncer (IAM) who decides who's allowed to do what. But here's an uncomfortable truth: **the bouncer can be wrong.** Or tired. Or pressured. Or new. Or you might forget to brief them properly. And some doors should never be opened — not by anyone, not even the owner of the building.
+
+For those, you don't need a bouncer. You need a **fire code**.
+
+That's what an **organization policy** is in GCP. It's not a permission. It's a hard prohibition baked into the architecture itself, attached at the very top of the hierarchy from Lesson 1.1, and inherited by every folder, project, and resource below.
+
+<OrgPoliciesWidget />
+
+## What org policies actually are
+
+An IAM binding says: *Alice has the Storage Admin role on this bucket.*  
+An org policy says: *Nobody — not Alice, not even the Owner of the entire organization — can make any bucket in this company public. Ever.*
+
+The mechanism is fundamentally different. IAM is a *grant*. Org policies are *constraints*. They live at the Organization, Folder, or Project level (just like IAM bindings — same hierarchy from Lesson 1.1), and they flow downward through inheritance, just like IAM. But where IAM unlocks doors, org policies brick them shut.
+
+The full library has hundreds of constraints — Google adds new ones every quarter. But three of them are table stakes for any company at the Fortune 500 tier:
+
+**`storage.publicAccessPrevention`** — when set to `enforced`, no Cloud Storage bucket anywhere in the org can be made public. The IAM screen for adding `allUsers` will silently fail. This is the policy that would have prevented a remarkable percentage of every "company X leaks customer data via misconfigured S3 bucket" headline you've ever read, except for GCP.
+
+**`gcp.resourceLocations`** — restricts which regions resources can be created in. EU-only for GDPR. India-only for RBI data localization. US-only for FedRAMP workloads. Without it, a developer in your Bangalore office can spin up Cloud SQL holding regulated EU customer data in `us-central1` by accident, and you've just become a GDPR violation. With it, they physically cannot. The API rejects the request.
+
+**`iam.allowedPolicyMemberDomains`** — restricts IAM bindings to identities from your own organization's domain. Without it, an engineer can grant `Owner` on a project to `random-consultant@gmail.com`. With it, only `@yourcompany.com` identities can ever appear in IAM bindings anywhere in the org. This is the kind of thing that gets immediately flagged in a SOC 2 audit if missing, and it's a 10-minute fix that you should have set on day one.
+
+## The architect's "why" — trust the architecture, not the engineers
+
+Here's the mental shift that separates architects from senior engineers: **you stop trying to train good behavior, and start making bad behavior impossible.**
+
+A senior engineer's instinct, when asked "how do we prevent public buckets," is: write a runbook, do code reviews, set up alerting. These all help, but they're all reactive — they catch the mistake after it happens. The architect's answer is: set the org policy. Then it's not even possible to make the mistake in the first place. The IAM screen for `allUsers` returns an error.
+
+This is the principle behind **Governance-as-Code** — the idea that your governance posture (what's allowed, what's required, what's forbidden) should be expressed as machine-checkable rules, not human-checkable guidelines. Org policies are the GCP-native primitive for this. They turn "we have a policy" (a sentence in a Word doc) into "we have a control" (a technical mechanism that enforces the policy automatically, on every request, forever).
+
+<div class="architect-note">
+  <div class="architect-note-label">Architect's note — the audit conversation</div>
+
+  When a SOC 2, ISO 27001, or PCI-DSS auditor asks "how do you prevent X," there are two acceptable answers and one unacceptable answer.
+
+  **Unacceptable:** "We have a policy that says we don't do X" — *(written, but not enforced. Useless to an auditor.)*
+
+  **Acceptable:** "We have alerting that fires when X happens" — *(detective control. Better than nothing, but the breach already happened.)*
+
+  **What auditors love:** "We have a technical control that makes X impossible — here's the org policy enforcing it" — *(preventive control. Nothing to detect because nothing can happen.)*
+
+  Org policies move you from the second category to the third. For regulated finance, healthcare, and government work, this is not a nice-to-have — it's the difference between "audit passed" and "remediation plan required by Q2."
+</div>
+
+## The deny-by-default pattern
+
+Here's the architectural pattern you'll use over and over: **deny dangerous things at the Organization level, then grant exceptions only where genuinely needed.**
+
+For example: set `storage.publicAccessPrevention` to `enforced` at the Org level, blocking public buckets everywhere. But your marketing team genuinely needs one public bucket to host static website assets. You create a `Marketing/PublicAssets` folder, attach an org policy *override* on that folder relaxing the constraint, and place exactly that one bucket in there. Everywhere else in the company, the deny still applies.
+
+This is the inverse of how IAM works (IAM is grant-by-default — no access until you explicitly grant). Org policies are deny-by-default for the constraints you set — no exceptions until you explicitly carve them out. Combining both gives you the **defense in depth** that real production GCP environments need: IAM controls who *would* be allowed to do something, and org policies prevent the dangerous things from being doable at all.
+
+## Coming up
+
+In Lesson 1.4 we shift from blueprints and bouncers into the actual physical layer — **VPCs and subnets**. We've talked a lot about *who* can do *what*; now we start talking about *where the wires actually run*.

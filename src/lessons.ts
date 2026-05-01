@@ -43,7 +43,7 @@ export const gcpInfraLessons: LessonMeta[] = [
     phaseTitle: 'Blueprint & bouncers',
     description: 'Org-wide guardrails that prevent even an Owner from doing dumb things — the technical foundation of regulatory compliance.',
     analogy: 'The fire code for your whole building',
-    status: 'planned',
+    status: 'published',
   },
 
   // Phase 2
