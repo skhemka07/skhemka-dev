@@ -1,134 +1,128 @@
 ---
-// Resource Hierarchy interactive — drop into any lesson with <ResourceHierarchy />
+// Resource Hierarchy interactive — matched to Lesson 1.3 visual style
 ---
 
-<div class="hierarchy-widget" data-widget="hierarchy">
+<div class="rh-widget" data-rh-widget>
   <svg width="100%" viewBox="0 0 680 520" role="img">
     <title>GCP Resource Hierarchy</title>
     <desc>Four nested levels: Organization at top, Folders, Projects, and Resources at the bottom, with a downward arrow showing policy inheritance.</desc>
     <defs>
-      <marker id="hier-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <marker id="rh-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
         <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </marker>
     </defs>
 
-    <g class="hier-node" data-level="org" style="cursor:pointer">
+    <g class="rh-node" data-level="org" style="cursor:pointer">
       <rect x="80" y="30" width="520" height="64" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
       <text x="340" y="56" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#0C447C">1. Organization</text>
       <text x="340" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">The filing cabinet — yourcompany.com</text>
     </g>
 
-    <line x1="340" y1="100" x2="340" y2="120" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+    <line x1="340" y1="100" x2="340" y2="120" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
 
-    <g class="hier-node" data-level="folder" style="cursor:pointer">
+    <g class="rh-node" data-level="folder" style="cursor:pointer">
       <rect x="120" y="126" width="440" height="64" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
       <text x="340" y="152" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#085041">2. Folders</text>
       <text x="340" y="172" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">The drawers — HR, Engineering, Finance</text>
     </g>
 
-    <line x1="340" y1="196" x2="340" y2="216" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+    <line x1="340" y1="196" x2="340" y2="216" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
 
-    <g class="hier-node" data-level="project" style="cursor:pointer">
+    <g class="rh-node" data-level="project" style="cursor:pointer">
       <rect x="160" y="222" width="360" height="64" rx="10" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
       <text x="340" y="248" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#633806">3. Projects</text>
       <text x="340" y="268" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#854F0B">The manila folders — billing, IAM, isolation</text>
     </g>
 
-    <line x1="340" y1="292" x2="340" y2="312" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.5"/>
+    <line x1="340" y1="292" x2="340" y2="312" stroke="#888" stroke-width="0.5" stroke-dasharray="3 3"/>
 
-    <g class="hier-node" data-level="resource" style="cursor:pointer">
+    <g class="rh-node" data-level="resource" style="cursor:pointer">
       <rect x="200" y="318" width="280" height="64" rx="10" fill="#EEEDFE" stroke="#3C3489" stroke-width="0.5"/>
       <text x="340" y="344" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#26215C">4. Resources</text>
       <text x="340" y="364" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#3C3489">VMs, buckets, databases, AI models</text>
     </g>
 
     <path d="M610 50 L 640 50 L 640 350 L 610 350" fill="none" stroke="#BA7517" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="640" y1="350" x2="500" y2="350" stroke="#BA7517" stroke-width="1.5" marker-end="url(#hier-arrow)"/>
+    <line x1="640" y1="350" x2="500" y2="350" stroke="#BA7517" stroke-width="1.5" marker-end="url(#rh-arrow)"/>
     <text x="655" y="200" text-anchor="middle" transform="rotate(90 655 200)" font-size="12" fill="#854F0B">Policy inheritance flows down</text>
 
     <g>
-      <rect x="80" y="420" width="520" height="80" rx="10" fill="var(--color-bg-secondary)" stroke="var(--color-border)" stroke-width="0.5"/>
-      <text x="340" y="448" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="var(--color-text-primary)">The architect's "why"</text>
-      <text x="340" y="470" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">Block Bob once at the Folder level —</text>
-      <text x="340" y="486" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">the architecture blocks him on every project and resource below.</text>
+      <rect x="80" y="420" width="520" height="80" rx="10" fill="#3c2820" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="340" y="446" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#efad4e">The architect's "why"</text>
+      <text x="340" y="468" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d3d1c7">Block Bob once at the Folder level —</text>
+      <text x="340" y="486" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d3d1c7">the architecture blocks him on every project and resource below.</text>
     </g>
   </svg>
 
-  <div class="hier-detail-panel" data-panel>
-    <p class="hier-prompt">👆 Click any level above to see the architect's notes</p>
+  <div class="rh-detail-panel" data-rh-panel>
+    <div class="rh-prompt">
+      <span class="rh-prompt-icon">→</span>
+      <span>Click any level above to read the architect's notes</span>
+    </div>
   </div>
 
-  <div class="hier-quiz">
-    <div class="hier-quiz-header">
-      <span class="hier-quiz-tag">Quick check</span>
-      <span class="hier-quiz-meta">Architect scenario</span>
+  <div class="rh-quiz">
+    <div class="rh-quiz-header">
+      <span class="rh-quiz-tag">Quick check</span>
+      <span class="rh-quiz-meta">Architect scenario</span>
     </div>
-    <p class="hier-quiz-q">You're setting up GCP for a new <strong>mobile game company</strong>. You have:</p>
-    <ul class="hier-quiz-list">
+    <p class="rh-quiz-q">You're setting up GCP for a new <strong>mobile game company</strong>. You have:</p>
+    <ul class="rh-quiz-list">
       <li>A team of developers who need to experiment and break things safely</li>
       <li>A live game that's making real money</li>
     </ul>
-    <p class="hier-quiz-q-bottom">How many projects (manila folders) would you create?</p>
-    <div class="hier-quiz-options" data-options>
+    <p class="rh-quiz-q-bottom">How many projects (manila folders) would you create?</p>
+    <div class="rh-quiz-options" data-rh-options>
       <button data-answer="1">1 project</button>
       <button data-answer="2">2 projects</button>
       <button data-answer="3">3 projects</button>
       <button data-answer="4">4+ projects</button>
     </div>
-    <div class="hier-quiz-feedback" data-feedback></div>
+    <div class="rh-quiz-feedback" data-rh-feedback></div>
   </div>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLDivElement>('[data-widget="hierarchy"]').forEach((root) => {
-    const levelData: Record<string, { title: string; color: string; bg: string; deepColor: string; body: string }> = {
+  document.querySelectorAll<HTMLDivElement>('[data-rh-widget]').forEach((root) => {
+    const levelData: Record<string, { title: string; accent: string; body: string }> = {
       org: {
         title: "1. Organization — the filing cabinet",
-        color: "#185FA5",
-        bg: "#E6F1FB",
-        deepColor: "#042C53",
+        accent: "#7eb6f0",
         body: "The absolute top level. Represents your entire company (e.g., yourcompany.com). Everything your company ever builds in GCP lives inside this single, massive filing cabinet. If an employee leaves, they don't take their cloud resources with them — it all belongs to the Organization."
       },
       folder: {
         title: "2. Folders — the drawers",
-        color: "#0F6E56",
-        bg: "#E1F5EE",
-        deepColor: "#04342C",
+        accent: "#5dcaa5",
         body: "Inside the filing cabinet, you create large drawers called Folders. Usually used to represent different departments or environments. You can even nest folders inside folders — e.g., inside 'Engineering', you might have 'Production' and 'Testing'."
       },
       project: {
         title: "3. Projects — the manila folders",
-        color: "#854F0B",
-        bg: "#FAEEDA",
-        deepColor: "#412402",
+        accent: "#efad4e",
         body: "The most important concept in GCP. You cannot build anything (server, database, network) without first creating a Project. Projects act as a strict boundary for three things: <strong>Billing</strong> (who pays?), <strong>Permissions</strong> (who can open it?), and <strong>Isolation</strong> (deleting one project has zero impact on others)."
       },
       resource: {
         title: "4. Resources — the documents",
-        color: "#3C3489",
-        bg: "#EEEDFE",
-        deepColor: "#26215C",
+        accent: "#b09ce8",
         body: "The actual things you build — Compute Engine VMs, Cloud Storage buckets, AI models. They are the pieces of paper neatly filed inside the Project."
       }
     };
 
-    const panel = root.querySelector<HTMLDivElement>('[data-panel]')!;
+    const panel = root.querySelector<HTMLDivElement>('[data-rh-panel]')!;
 
-    root.querySelectorAll<SVGGElement>('.hier-node').forEach((node) => {
+    root.querySelectorAll<SVGGElement>('.rh-node').forEach((node) => {
       node.addEventListener('click', () => {
         const level = node.dataset.level!;
         const data = levelData[level];
         panel.innerHTML = `
-          <div class="hier-detail-title" style="color: ${data.color}">${data.title}</div>
-          <p>${data.body}</p>
+          <div class="rh-detail-title" style="color: ${data.accent};">${data.title}</div>
+          <p class="rh-detail-body">${data.body}</p>
         `;
-        panel.style.background = data.bg;
-        panel.style.setProperty('--detail-text', data.deepColor);
+        panel.style.borderColor = data.accent;
       });
     });
 
-    const optionsEl = root.querySelector<HTMLDivElement>('[data-options]')!;
-    const feedback = root.querySelector<HTMLDivElement>('[data-feedback]')!;
+    const optionsEl = root.querySelector<HTMLDivElement>('[data-rh-options]')!;
+    const feedback = root.querySelector<HTMLDivElement>('[data-rh-feedback]')!;
     optionsEl.querySelectorAll<HTMLButtonElement>('button').forEach((btn) => {
       btn.addEventListener('click', () => {
         const n = parseInt(btn.dataset.answer!);
@@ -137,15 +131,15 @@
           b.style.opacity = '0.5';
           if (parseInt(b.dataset.answer!) === n) {
             b.style.opacity = '1';
-            b.style.borderColor = n === 2 ? 'var(--color-success)' : 'var(--color-danger)';
+            b.style.borderColor = n === 2 ? '#5dcaa5' : '#e08585';
           }
         });
         feedback.style.display = 'block';
         if (n === 2) {
-          feedback.className = 'hier-quiz-feedback success';
+          feedback.className = 'rh-quiz-feedback success';
           feedback.innerHTML = '<strong>✓ Correct — 2 projects.</strong> One project for the live production game (locked down, restricted permissions, separate billing), and one for the developers to experiment in. If a developer accidentally deletes everything in the dev project, the production game keeps running and your revenue is safe. <em>This is the isolation principle in action.</em>';
         } else {
-          feedback.className = 'hier-quiz-feedback warning';
+          feedback.className = 'rh-quiz-feedback warning';
           let hint = '';
           if (n === 1) hint = "One project means devs and production share the same blast radius. A bad <code>terraform destroy</code> takes down the live game. Try again — think about isolation.";
           else if (n === 3) hint = "3+ is reasonable for larger setups (dev, staging, prod), but for the minimum needed to keep the live game safe from experiments, the answer is smaller.";
@@ -158,50 +152,70 @@
 </script>
 
 <style>
-  .hierarchy-widget {
-    margin: 2rem 0;
-  }
-  .hier-node:hover rect {
-    filter: brightness(0.97);
-  }
-  .hier-detail-panel {
-    background: var(--color-bg-secondary);
+  .rh-widget { margin: 2rem 0; }
+  .rh-node:hover rect { filter: brightness(0.97); }
+  .rh-detail-panel {
+    background: #2c2a26;
+    border: 1px solid #4a4a48;
     border-radius: var(--radius-lg);
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
     margin: 1rem 0 1.5rem;
     min-height: 100px;
-    transition: background 0.2s;
+    transition: border-color 0.2s;
   }
-  .hier-prompt {
+  .rh-prompt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b4b2a9;
     font-size: 14px;
-    color: var(--color-text-secondary);
-    margin: 0;
-    text-align: center;
+    justify-content: center;
+    padding: 0.5rem 0;
   }
-  .hier-detail-title {
-    font-size: 14px;
+  .rh-prompt-icon {
+    color: #efad4e;
     font-weight: 500;
-    margin-bottom: 8px;
   }
-  .hier-detail-panel p {
+  .rh-detail-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .rh-detail-body {
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.65;
     margin: 0;
-    color: var(--detail-text, var(--color-text-primary));
+    color: #f0eee6;
   }
-  .hier-quiz {
+  .rh-detail-body strong {
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .rh-detail-body em {
+    color: #d3d1c7;
+    font-style: italic;
+  }
+  .rh-detail-body code {
+    background: #1a1815;
+    color: #efad4e;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .rh-quiz {
     background: var(--color-bg-card);
     border: 0.5px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: 1.25rem 1.5rem;
   }
-  .hier-quiz-header {
+  .rh-quiz-header {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
   }
-  .hier-quiz-tag {
+  .rh-quiz-tag {
     background: var(--color-info-bg);
     color: var(--color-info);
     font-size: 12px;
@@ -209,41 +223,48 @@
     padding: 4px 10px;
     border-radius: var(--radius-md);
   }
-  .hier-quiz-meta {
+  .rh-quiz-meta {
     font-size: 13px;
     color: var(--color-text-secondary);
   }
-  .hier-quiz-q { font-size: 15px; margin: 0 0 12px; }
-  .hier-quiz-list {
+  .rh-quiz-q { font-size: 15px; margin: 0 0 12px; }
+  .rh-quiz-list {
     font-size: 14px;
     color: var(--color-text-secondary);
     margin: 0 0 16px;
     padding-left: 20px;
     line-height: 1.7;
   }
-  .hier-quiz-q-bottom { font-size: 14px; margin: 0 0 12px; }
-  .hier-quiz-options {
+  .rh-quiz-q-bottom { font-size: 14px; margin: 0 0 12px; }
+  .rh-quiz-options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 8px;
     margin-bottom: 12px;
   }
-  .hier-quiz-options button {
+  .rh-quiz-options button {
     padding: 10px;
   }
-  .hier-quiz-feedback {
+  .rh-quiz-feedback {
     display: none;
     padding: 12px;
     border-radius: var(--radius-md);
     font-size: 14px;
     line-height: 1.6;
   }
-  .hier-quiz-feedback.success {
+  .rh-quiz-feedback.success {
     background: var(--color-success-bg);
     color: var(--color-success);
   }
-  .hier-quiz-feedback.warning {
+  .rh-quiz-feedback.warning {
     background: var(--color-warning-bg);
     color: var(--color-warning);
+  }
+  .rh-quiz-feedback code {
+    background: rgba(0,0,0,0.15);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
   }
 </style>

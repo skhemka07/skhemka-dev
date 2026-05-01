@@ -1,8 +1,8 @@
 ---
-// IAM interactive — drop into any lesson with <IAMWidget />
+// IAM interactive — matched to Lesson 1.3 visual style
 ---
 
-<div class="iam-widget" data-widget="iam">
+<div class="iam-widget" data-iam-widget>
   <svg width="100%" viewBox="0 0 680 280" role="img">
     <title>The three IAM questions</title>
     <desc>Three pillars representing the questions IAM asks: Who, What, and Where, all governed by the principle of least privilege.</desc>
@@ -29,15 +29,18 @@
     </g>
 
     <g>
-      <rect x="40" y="180" width="600" height="76" rx="10" fill="var(--color-bg-secondary)" stroke="var(--color-border)" stroke-width="0.5"/>
-      <text x="340" y="208" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="var(--color-text-primary)">The golden rule — least privilege</text>
-      <text x="340" y="230" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">Give the minimum access needed to do the job —</text>
-      <text x="340" y="246" text-anchor="middle" dominant-baseline="central" font-size="12" fill="var(--color-text-secondary)">not one permission more.</text>
+      <rect x="40" y="180" width="600" height="76" rx="10" fill="#3c2820" stroke="#854F0B" stroke-width="0.5"/>
+      <text x="340" y="208" text-anchor="middle" dominant-baseline="central" font-weight="500" font-size="14" fill="#efad4e">The golden rule — least privilege</text>
+      <text x="340" y="230" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d3d1c7">Give the minimum access needed to do the job —</text>
+      <text x="340" y="246" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d3d1c7">not one permission more.</text>
     </g>
   </svg>
 
-  <div class="iam-detail-panel" data-panel>
-    <p class="iam-prompt">👆 Click a pillar to see the architect's notes</p>
+  <div class="iam-detail-panel" data-iam-panel>
+    <div class="iam-prompt">
+      <span class="iam-prompt-icon">→</span>
+      <span>Click a pillar to read the architect's notes</span>
+    </div>
   </div>
 
   <div class="iam-quiz">
@@ -75,49 +78,42 @@
       </div>
     </div>
 
-    <button class="iam-check-btn" data-check>Check my answer</button>
+    <button class="iam-check-btn" data-iam-check>Check my answer</button>
 
-    <div class="iam-quiz-feedback" data-feedback></div>
+    <div class="iam-quiz-feedback" data-iam-feedback></div>
   </div>
 </div>
 
 <script>
-  document.querySelectorAll<HTMLDivElement>('[data-widget="iam"]').forEach((root) => {
-    const pillarData: Record<string, { title: string; color: string; bg: string; deepColor: string; body: string }> = {
+  document.querySelectorAll<HTMLDivElement>('[data-iam-widget]').forEach((root) => {
+    const pillarData: Record<string, { title: string; accent: string; body: string }> = {
       who: {
         title: "1. Who — identities",
-        color: "#185FA5",
-        bg: "#E6F1FB",
-        deepColor: "#042C53",
+        accent: "#7eb6f0",
         body: "Three flavors of identity. <strong>Google Accounts</strong> are individual humans (alice@company.com). <strong>Google Groups</strong> are collections of humans — always prefer groups so you can add/remove people without touching IAM bindings. <strong>Service Accounts</strong> are robots — when an app talks to a database, it uses a service account, never a human's credentials."
       },
       what: {
         title: "2. What — roles",
-        color: "#0F6E56",
-        bg: "#E1F5EE",
-        deepColor: "#04342C",
-        body: "You assign roles, not individual permissions. <strong>Basic roles</strong> (Owner, Editor, Viewer) are too broad — never use them in production. <strong>Predefined roles</strong> are surgical (roles/storage.objectViewer only reads storage objects). <strong>Custom roles</strong> are for the rare case Google's catalog isn't specific enough."
+        accent: "#5dcaa5",
+        body: "You assign roles, not individual permissions. <strong>Basic roles</strong> (Owner, Editor, Viewer) are too broad — never use them in production. <strong>Predefined roles</strong> are surgical (<code>roles/storage.objectViewer</code> only reads storage objects). <strong>Custom roles</strong> are for the rare case Google's catalog isn't specific enough."
       },
       where: {
         title: "3. Where — scope",
-        color: "#854F0B",
-        bg: "#FAEEDA",
-        deepColor: "#412402",
+        accent: "#efad4e",
         body: "Bindings attach at a specific level of the hierarchy from Lesson 1.1 — Organization, Folder, Project, or individual Resource. A binding at the Project level grants the role across every resource in that project. A binding on a single bucket only works on that bucket. Lower scope = tighter blast radius."
       }
     };
 
-    const panel = root.querySelector<HTMLDivElement>('[data-panel]')!;
+    const panel = root.querySelector<HTMLDivElement>('[data-iam-panel]')!;
     root.querySelectorAll<SVGGElement>('.iam-pillar').forEach((node) => {
       node.addEventListener('click', () => {
         const key = node.dataset.pillar!;
         const data = pillarData[key];
         panel.innerHTML = `
-          <div class="iam-detail-title" style="color: ${data.color}">${data.title}</div>
-          <p>${data.body}</p>
+          <div class="iam-detail-title" style="color: ${data.accent};">${data.title}</div>
+          <p class="iam-detail-body">${data.body}</p>
         `;
-        panel.style.background = data.bg;
-        panel.style.setProperty('--detail-text', data.deepColor);
+        panel.style.borderColor = data.accent;
       });
     });
 
@@ -139,8 +135,8 @@
       });
     });
 
-    const fb = root.querySelector<HTMLDivElement>('[data-feedback]')!;
-    root.querySelector<HTMLButtonElement>('[data-check]')!.addEventListener('click', () => {
+    const fb = root.querySelector<HTMLDivElement>('[data-iam-feedback]')!;
+    root.querySelector<HTMLButtonElement>('[data-iam-check]')!.addEventListener('click', () => {
       if (!choices.identity || !choices.role || !choices.scope) {
         fb.style.display = 'block';
         fb.className = 'iam-quiz-feedback warning';
@@ -172,16 +168,50 @@
   .iam-widget { margin: 2rem 0; }
   .iam-pillar:hover rect { filter: brightness(0.97); }
   .iam-detail-panel {
-    background: var(--color-bg-secondary);
+    background: #2c2a26;
+    border: 1px solid #4a4a48;
     border-radius: var(--radius-lg);
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
     margin: 1rem 0 1.5rem;
     min-height: 100px;
-    transition: background 0.2s;
+    transition: border-color 0.2s;
   }
-  .iam-prompt { font-size: 14px; color: var(--color-text-secondary); margin: 0; text-align: center; }
-  .iam-detail-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-  .iam-detail-panel p { font-size: 14px; line-height: 1.6; margin: 0; color: var(--detail-text, var(--color-text-primary)); }
+  .iam-prompt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #b4b2a9;
+    font-size: 14px;
+    justify-content: center;
+    padding: 0.5rem 0;
+  }
+  .iam-prompt-icon {
+    color: #efad4e;
+    font-weight: 500;
+  }
+  .iam-detail-title { font-size: 15px; font-weight: 500; margin-bottom: 10px; }
+  .iam-detail-body {
+    font-size: 14px;
+    line-height: 1.65;
+    margin: 0;
+    color: #f0eee6;
+  }
+  .iam-detail-body strong {
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .iam-detail-body em {
+    color: #d3d1c7;
+    font-style: italic;
+  }
+  .iam-detail-body code {
+    background: #1a1815;
+    color: #efad4e;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
   .iam-quiz {
     background: var(--color-bg-card);
     border: 0.5px solid var(--color-border);
@@ -220,4 +250,11 @@
   .iam-quiz-feedback.warning { background: var(--color-warning-bg); color: var(--color-warning); }
   .iam-quiz-feedback ul { margin: 8px 0 0; padding-left: 20px; }
   .iam-quiz-feedback li { margin-bottom: 6px; }
+  .iam-quiz-feedback code {
+    background: rgba(0,0,0,0.15);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
 </style>
